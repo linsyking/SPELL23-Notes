@@ -152,9 +152,23 @@
 \maketitle
 % \begin{spacing}{2}
 \subsection{Intuitionistic Proofs}
+
 I used some linear-style proofs to represent the proof tree which are much \emph{harder} to draw and read on an A-4 paper, except one proof. They can be converted to each other easily.
+
 \begin{theorem}
-    $P \supset ((P\supset Q)\supset Q)$ \true.
+    $\vdash P\supset P\true$.
+    \label{imp-ii}
+\end{theorem}
+\setcounter{rowcount}{0}
+\begin{proof}
+    \begin{tabular}{@{\stepcounter{rowcount}\therowcount. }lr}
+        $P\true\vdash P\true$,    & \textsc{Assump} \\
+        $\vdash P\supset P\true$, & $\supset$-I     \\
+    \end{tabular}
+\end{proof}
+
+\begin{theorem}
+    $\vdash P \supset ((P\supset Q)\supset Q)$ \true.
 \end{theorem}
 \begin{proof}
     \begin{tabular}{@{\stepcounter{rowcount}\therowcount. }lr}
@@ -169,7 +183,7 @@ I used some linear-style proofs to represent the proof tree which are much \emph
 Since we define negation $\neg p$ by $p \supset \bot$, and we have the following corollary:
 \begin{corollary}
     \textbf{(Double Negation Introduction, $\neg \neg$-I)}
-    $P\supset \neg \neg P$\true.
+    $\vdash P\supset \neg \neg P$\true.
 \end{corollary}
 
 However, the \textbf{double negation elimination}, $\neg \neg P \supset P$ is \emph{not} an intuitionistic tautology,
@@ -185,7 +199,7 @@ For simplicity, we add a rule which is equivalent to $\supset$-I but written in 
 \setcounter{rowcount}{0}
 \begin{theorem}
     \textbf{(Embedding of LEM)}
-    $\neg \neg (P \lor \neg P)$ \true.
+    $\vdash \neg \neg (P \lor \neg P)$ \true.
     \label{embedding-lem}
 \end{theorem}
 \begin{proof}
@@ -204,7 +218,7 @@ For simplicity, we add a rule which is equivalent to $\supset$-I but written in 
 \setcounter{rowcount}{0}
 \begin{theorem}
     \textbf{(Triple Negation Reduction)}
-    $\neg \neg \neg P \supset \neg P$ \true.
+    $\vdash \neg \neg \neg P \supset \neg P$ \true.
     \label{tnr}
 \end{theorem}
 \begin{proof}
@@ -295,17 +309,47 @@ Let's prove the following conclusion: DNE $\Rightarrow$ LEM $\Rightarrow$ A3 $\R
     Theorem \ref{embedding-lem} with DNE reached LEM.
 \end{proof}
 
-\setcounter{rowcount}{0}
 \begin{theorem}
     \emph{LEM} entails \emph{A3}.
 \end{theorem}
+\setcounter{rowcount}{0}
 \begin{proof}
     Let $\Gamma' = \Gamma \cup\{\neg P, (\neg P \supset \neg Q), (\neg P \supset Q)\}$.
 
     \begin{tabular}{@{\stepcounter{rowcount}\therowcount. }lr}
-        $\Gamma, P\true \vdash P \true $, & \textsc{Assump} \\
+        $\Gamma, P, (\neg P \supset \neg Q), (\neg P \supset Q)\true \vdash P \true $,                & \textsc{Assump}     \\
+        $\Gamma'\true \vdash \neg P\true$,                                                            & \textsc{Assump}     \\
+        $\Gamma'\true \vdash \neg P \supset \neg Q\true$,                                             & \textsc{Assump}     \\
+        $\Gamma'\true \vdash \neg P \supset Q\true$,                                                  & \textsc{Assump}     \\
+        $\Gamma'\true \vdash Q\true$,                                                                 & 2,4,$\supset$-E     \\
+        $\Gamma'\true \vdash \neg Q\true$,                                                            & 2,3,$\supset$-E     \\
+        $\Gamma'\true \vdash \bot\true$,                                                              & 5,6,$\supset$-E     \\
+        $\Gamma'\true \vdash P\true$,                                                                 & $\bot$-E            \\
+        $\Gamma, \neg P\true \vdash (\neg P \supset \neg Q)\supset (\neg P \supset Q)\supset P\true$, & 8,$\supset$-I twice \\
+        $\Gamma, P\true \vdash (\neg P \supset \neg Q)\supset (\neg P \supset Q)\supset P\true$,      & 1,$\supset$-I twice \\
+        $\Gamma \true \vdash P\lor \neg P$,                                                           & LEM                 \\
+        $\Gamma \true \vdash (\neg P \supset \neg Q)\supset (\neg P \supset Q)\supset P\true$,        & 9,10,11,$\lor$-E    \\
     \end{tabular}
 \end{proof}
+
+\setcounter{rowcount}{0}
+\begin{theorem}
+    \emph{A3} entails \emph{DNE}.
+\end{theorem}
+\begin{proof}
+    Let $\Gamma' = \Gamma \cup \{\neg\neg P\}$.
+
+    \begin{tabular}{@{\stepcounter{rowcount}\therowcount. }lr}
+        $\Gamma' \true \vdash \neg P \supset \neg P\true$,                                        & Theorem \ref{imp-ii} \\
+        $\Gamma' \true \vdash (\neg P \supset \neg P) \supset (\neg P \supset P)\supset P\true $, & A3                   \\
+        $\Gamma' \true \vdash (\neg P \supset P)\supset P\true $,                                 & 1,2,$\supset$-E      \\
+        $\Gamma' \true \vdash \neg P\supset P \true$                                              & \textsc{Assump}      \\
+        $\Gamma' \true \vdash P \true$                                                            & 3,4,$\supset$-E      \\
+        $\Gamma \true \vdash \neg\neg P \supset P \true$                                          & 5,$\supset$-I        \\
+    \end{tabular}
+\end{proof}
+
+Hence, we could say the DNE, LEM and A3 are equivalent extension to IPL.
 
 \subsection*{Appendix}
 The \emph{Coq} code for some theorems, all verified.
