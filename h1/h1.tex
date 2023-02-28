@@ -273,13 +273,39 @@ There are three ways to recover the classical logic from intuitionistic logic, b
 
 \noindent\textbf{Double Negation Elimination (DNE)}
 \begin{mathpar}
-    \inferrule*[Right=DNE]{ }{\neg (\neg\neg P \supset P), \neg\neg P\vdash \neg P}
+    \inferrule*[Right=DNE]{ }{\Gamma \vdash \neg\neg P \supset P\true}
 \end{mathpar}
 
 \noindent\textbf{Law of Excluded Middle (LEM)}
 \begin{mathpar}
-    \inferrule*[Right=LEM]{ }{\Gamma \vdash \neg\neg P \supset P}
+    \inferrule*[Right=LEM]{ }{\Gamma \vdash P\lor \neg P \true}
 \end{mathpar}
+
+\noindent\textbf{A3}
+\begin{mathpar}
+    \inferrule*[Right=A3]{ }{\Gamma \vdash (\neg P \supset \neg Q)\supset (\neg P \supset Q)\supset P \true}
+\end{mathpar}
+
+Let's prove the following conclusion: DNE $\Rightarrow$ LEM $\Rightarrow$ A3 $\Rightarrow$ DNE.
+
+\begin{theorem}
+    \emph{DNE} entails \emph{LEM}.
+\end{theorem}
+\begin{proof}
+    Theorem \ref{embedding-lem} with DNE reached LEM.
+\end{proof}
+
+\setcounter{rowcount}{0}
+\begin{theorem}
+    \emph{LEM} entails \emph{A3}.
+\end{theorem}
+\begin{proof}
+    Let $\Gamma' = \Gamma \cup\{\neg P, (\neg P \supset \neg Q), (\neg P \supset Q)\}$.
+
+    \begin{tabular}{@{\stepcounter{rowcount}\therowcount. }lr}
+        $\Gamma, P\true \vdash P \true $, & \textsc{Assump} \\
+    \end{tabular}
+\end{proof}
 
 \subsection*{Appendix}
 The \emph{Coq} code for some theorems, all verified.
