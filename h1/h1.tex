@@ -18,7 +18,6 @@
 \usepackage{draftwatermark}
 \usepackage{array}
 \usepackage{listings}
-
 \usepackage{xcolor}
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{ltblue}{rgb}{0,0.4,0.4}
@@ -139,7 +138,7 @@
 % Change here
 \newcommand{\course}{SPELL}
 \newcommand{\asnum}{1}
-\newcommand{\true}{\textsf{true}}
+\newcommand{\true}{\,\textsf{true}}
 %
 
 \setcounter{section}{1}
@@ -153,7 +152,7 @@
 \maketitle
 % \begin{spacing}{2}
 \subsection{Intuitionistic Proofs}
-I will use linear-style proofs to represent the proof tree.
+I used some linear-style proofs to represent the proof tree which are much \emph{harder} to draw and read on an A-4 paper, except one proof. They can be converted to each other easily.
 \begin{theorem}
     $P \supset ((P\supset Q)\supset Q)$ \true.
 \end{theorem}
@@ -180,13 +179,33 @@ For simplicity, we add a rule which is equivalent to $\supset$-I but written in 
 
 \noindent \textbf{Negation Introduction, $\neg$-I}
 \begin{mathpar}
-    \inferrule{\Gamma, P\vdash Q\\ \Gamma, P \vdash \neg Q}{\Gamma \vdash \neg P}
+    \inferrule{\Gamma, P\true\vdash Q\true\\ \Gamma, P\true \vdash \neg Q\true}{\Gamma \vdash \neg P\true}
 \end{mathpar}
+
+\setcounter{rowcount}{0}
+\begin{theorem}
+    \textbf{(Embedding of LEM)}
+    $\neg \neg (P \lor \neg P)$ \true.
+    \label{embedding-lem}
+\end{theorem}
+\begin{proof}
+    \begin{tabular}{@{\stepcounter{rowcount}\therowcount. }lr}
+        $\neg(P\lor \neg P), P \true \vdash P\lor \neg P \true$,       & $\lor$-Il       \\
+        $\neg(P\lor \neg P), P \true \vdash \neg(P\lor \neg P) \true$, & \textsc{Assump} \\
+        $\neg(P\lor \neg P)\true \vdash \neg P\true$,                  & 1,2,$\neg$-I    \\
+        $\neg P\true \vdash P\lor \neg P \true$,                       & $\lor$-Ir       \\
+        $\vdash \neg P \supset (P\lor \neg P) \true$,                  & 4,$\supset$-I   \\
+        $\neg(P\lor \neg P)\true \vdash P\lor \neg P \true$,           & 3,5,$\supset$-E \\
+        $\neg(P\lor \neg P)\true \vdash \neg(P\lor \neg P) \true$,     & \textsc{Assump} \\
+        $\vdash \neg \neg(P\lor \neg P) \true$,                        & $\neg$-I        \\
+    \end{tabular}
+\end{proof}
 
 \setcounter{rowcount}{0}
 \begin{theorem}
     \textbf{(Triple Negation Reduction)}
     $\neg \neg \neg P \supset \neg P$ \true.
+    \label{tnr}
 \end{theorem}
 \begin{proof}
     \begin{tabular}{@{\stepcounter{rowcount}\therowcount. }lr}
@@ -197,21 +216,78 @@ For simplicity, we add a rule which is equivalent to $\supset$-I but written in 
     \end{tabular}
 \end{proof}
 
-
-\setcounter{rowcount}{0}
+Theorem \ref{tnr} implies an important fact:
 \begin{theorem}
-    \textbf{(Embedding of LEM)}
-    $\neg \neg (P \lor \neg P)$ \true.
+    $\Gamma \vdash_{IPL} \neg P \true$ \emph{iff} $\Gamma \vdash_{CPL} \neg P \true$.
 \end{theorem}
 \begin{proof}
-    \begin{tabular}{@{\stepcounter{rowcount}\therowcount. }lr}
-        $P,P\supset Q \true \vdash P\true$, & \textsc{Assump} \\
-    \end{tabular}
+    Here we regard CPL as an extension to IPL by adding LEM.
+    Since $P\supset \neg\neg P\true$ in IPL and theorem \ref{embedding-lem}, we know that:
+    \[
+        \Gamma \vdash_{IPL} \neg\neg P\true \, \text{if}\, \Gamma \vdash_{CPL} P\true
+    \]
+    From theorem \ref{tnr},
+    \[
+        \Gamma \vdash_{IPL} \neg P\true \, \text{if}\, \Gamma \vdash_{CPL} \neg P\true
+    \]
 \end{proof}
 
+\begin{theorem}
+    $\vdash \neg\neg (\neg\neg P\supset P)\true$.
+\end{theorem}
+\begin{proof}
+    To save the page, I omit all the ``\textsf{true}'' notations in the following proof tree.
+    \begin{mathpar}
+        \inferrule*[Right=$\neg$-I]{
+            \inferrule*[Right=$\supset$-I]{
+                \inferrule*[Right=$\bot$-E]{
+                    \inferrule*[Right=$\supset$-E]{
+                        \cdots \\
+                        \inferrule*[Right=Ass.]{ }{\neg (\neg\neg P \supset P), \neg\neg P\vdash \neg\neg P}
+                    }{\neg (\neg\neg P \supset P), \neg\neg P\vdash \bot}}{
+                    \neg (\neg\neg P \supset P), \neg\neg P\vdash P
+                }}{
+                \neg (\neg\neg P \supset P)\vdash \neg\neg P\supset P
+            }\\
+            \inferrule*[Right=Ass.]{ }{\neg (\neg\neg P \supset P)\vdash \neg (\neg\neg P \supset P)}
+        }{
+            \vdash \neg\neg (\neg\neg P \supset P)
+        }
+    \end{mathpar}
+    where $\cdots$ continues here:
+    \begin{mathpar}
+
+        \inferrule*[Right=$\neg$-I,leftskip=5em]{\inferrule*[Right=$\supset$-I]{\inferrule*[Right=Ass.]{ }{\neg (\neg\neg P \supset P), \neg\neg P, P\vdash P}}{
+                \neg (\neg\neg P \supset P), \neg\neg P, P\vdash \neg\neg P \supset P
+            }\\
+            \inferrule*[Right=Ass.]{ }{\neg (\neg\neg P \supset P), \neg\neg P, P\vdash \neg (\neg\neg P \supset P)}
+        }{\neg (\neg\neg P \supset P), \neg\neg P\vdash \neg P}
+    \end{mathpar}
+\end{proof}
+
+This is the double negation embedding of the double negation elimination. Since the double negation embedding will \emph{weaken} the judgement, this theorem doesn't mean ``IPL refutes double negation elimination''.
+
+\subsection{Classical Logic from Intuitionistic Logic}
+
+There are three ways to recover the classical logic from intuitionistic logic, by admitting any one of three axioms.
+
+\noindent\textbf{Double Negation Elimination (DNE)}
+\begin{mathpar}
+    \inferrule*[Right=DNE]{ }{\neg (\neg\neg P \supset P), \neg\neg P\vdash \neg P}
+\end{mathpar}
+
+\noindent\textbf{Law of Excluded Middle (LEM)}
+\begin{mathpar}
+    \inferrule*[Right=LEM]{ }{\Gamma \vdash \neg\neg P \supset P}
+\end{mathpar}
+
 \subsection*{Appendix}
-The \emph{Coq} code for some theorems.
+The \emph{Coq} code for some theorems, all verified.
 \lstinputlisting[language=Coq]{h1.v}
 % \end{spacing}
+
+\begin{thebibliography}{9}
+    \bibitem{int} Y. Yue and H. R., “Intuitionistic Propositional Logic and its validity in Classical Logic.” Feb. 27, 2023.
+\end{thebibliography}
 
 \end{document}
