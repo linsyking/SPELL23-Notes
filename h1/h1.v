@@ -5,7 +5,17 @@ apply H2.
 apply H1.
 Qed.
 
-Theorem t_12: forall S : Prop, ~ ~(S \/ ~S).
+Theorem t_12: forall S : Prop, ~ ~ ~ S -> ~ S.
+Proof.
+unfold not.
+intros S H1 H2.
+apply H1.
+intro H3.
+apply H3.
+apply H2.
+Qed.
+
+Theorem t_13: forall S : Prop, ~ ~(S \/ ~S).
 Proof.
 unfold not.
 intros S H1.

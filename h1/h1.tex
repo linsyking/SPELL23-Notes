@@ -9,6 +9,7 @@
 \usepackage{hyperref}
 \usepackage{exscale}
 \usepackage{pdfpages}
+\usepackage{mathpartir}
 \usepackage{relsize}
 \usepackage{cases}
 \usepackage{mathrsfs}
@@ -152,24 +153,61 @@
 \maketitle
 % \begin{spacing}{2}
 \subsection{Intuitionistic Proofs}
-I will use linear-style proofs.
+I will use linear-style proofs to represent the proof tree.
 \begin{theorem}
-    $P_1 \supset ((P_1\supset P_2)\supset P_2)$ \true.
+    $P \supset ((P\supset Q)\supset Q)$ \true.
 \end{theorem}
 \begin{proof}
     \begin{tabular}{@{\stepcounter{rowcount}\therowcount. }lr}
-        $P_1,P_1\supset P_2 \true \vdash P_1\true$,                           & \textsc{Assump} \\
-        $P_1,P_1\supset P_2 \true \vdash P_1\supset P_2\true$,                & \textsc{Assump} \\
-        $P_1,P_1\supset P_2 \true \vdash P_2 \true$,                          & $\supset$-E     \\
-        $P_1\true \vdash (P_1\supset P_2) \supset P_2 \true$                  & $\supset$-I     \\
-        $\vdash P_1 \supset \left( (P_1\supset P_2) \supset P_2 \right)\true$ & $\supset$-I     \\
+        $P,P\supset Q \true \vdash P\true$,                           & \textsc{Assump} \\
+        $P,P\supset Q \true \vdash P\supset Q\true$,                  & \textsc{Assump} \\
+        $P,P\supset Q \true \vdash Q \true$,                          & 1,2,$\supset$-E \\
+        $P\true \vdash (P\supset Q) \supset Q \true$                  & 3,$\supset$-I   \\
+        $\vdash P \supset \left( (P\supset Q) \supset Q \right)\true$ & 4,$\supset$-I   \\
     \end{tabular}
 \end{proof}
 
 Since we define negation $\neg p$ by $p \supset \bot$, and we have the following corollary:
 \begin{corollary}
+    \textbf{(Double Negation Introduction, $\neg \neg$-I)}
     $P\supset \neg \neg P$\true.
 \end{corollary}
+
+However, the \textbf{double negation elimination}, $\neg \neg P \supset P$ is \emph{not} an intuitionistic tautology,
+which means that $\neg \neg P$ is weaker than $P$.
+
+For simplicity, we add a rule which is equivalent to $\supset$-I but written in language of $\neg$:
+
+\noindent \textbf{Negation Introduction, $\neg$-I}
+\begin{mathpar}
+    \inferrule{\Gamma, P\vdash Q\\ \Gamma, P \vdash \neg Q}{\Gamma \vdash \neg P}
+\end{mathpar}
+
+\setcounter{rowcount}{0}
+\begin{theorem}
+    \textbf{(Triple Negation Reduction)}
+    $\neg \neg \neg P \supset \neg P$ \true.
+\end{theorem}
+\begin{proof}
+    \begin{tabular}{@{\stepcounter{rowcount}\therowcount. }lr}
+        $\neg \neg \neg P, P\true \vdash \neg \neg P\true$,      & $\neg \neg$-I   \\
+        $\neg \neg \neg P, P\true \vdash \neg \neg \neg P\true$, & \textsc{Assump} \\
+        $\neg \neg \neg P\true \vdash \neg P\true$,              & 1,2,$\neg$-I    \\
+        $\vdash \neg \neg \neg P \supset \neg P\true$,           & 3,$\supset$-I   \\
+    \end{tabular}
+\end{proof}
+
+
+\setcounter{rowcount}{0}
+\begin{theorem}
+    \textbf{(Embedding of LEM)}
+    $\neg \neg (P \lor \neg P)$ \true.
+\end{theorem}
+\begin{proof}
+    \begin{tabular}{@{\stepcounter{rowcount}\therowcount. }lr}
+        $P,P\supset Q \true \vdash P\true$, & \textsc{Assump} \\
+    \end{tabular}
+\end{proof}
 
 \subsection*{Appendix}
 The \emph{Coq} code for some theorems.
