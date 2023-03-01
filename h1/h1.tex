@@ -128,10 +128,10 @@
 \newcounter{rowcount}
 \setcounter{rowcount}{0}
 
+\theoremstyle{definition}
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem*{remark}{Remark}
 \newtheorem{corollary}{Corollary}[theorem]
-% \newenvironment{proof}{\emph{Proof}.}{\hfill$\square$}
 
 \SetWatermarkText{\mdfivesum file {\jobname}}
 \SetWatermarkFontSize{1cm}
@@ -306,17 +306,22 @@ There are three ways to recover the classical logic from intuitionistic logic, b
     \inferrule*[Right=A3]{ }{\Gamma \vdash (\neg P \supset \neg Q)\supset (\neg P \supset Q)\supset P \true}
 \end{mathpar}
 
-Let's prove the following conclusion: DNE $\Rightarrow$ LEM $\Rightarrow$ A3 $\Rightarrow$ DNE.
+\begin{remark}
+    LEM, DNE and A3 are not judgements or propositions. They are called \emph{rules}.
+\end{remark}
+
+Let's prove their equivalency by using circular implication: DNE $\Rightarrow$ LEM $\Rightarrow$ A3 $\Rightarrow$ DNE.
+Here ``$A \Rightarrow B$'' means $\Gamma \vdash_{IPL\cup \{A\}} P\true$ iff $\Gamma \vdash_{IPL\cup \{B\}} P\true$. $\vdash_{IPL}$ means that the derivation is under IPL rules.
 
 \begin{theorem}
-    \emph{DNE} entails \emph{LEM}.
+    DNE entails LEM.
 \end{theorem}
 \begin{proof}
     Theorem \ref{embedding-lem} with DNE imply LEM.
 \end{proof}
 
 \begin{theorem}
-    \emph{LEM} entails \emph{A3}.
+    LEM entails A3.
 \end{theorem}
 \setcounter{rowcount}{0}
 \begin{proof}
@@ -340,7 +345,7 @@ Let's prove the following conclusion: DNE $\Rightarrow$ LEM $\Rightarrow$ A3 $\R
 
 \setcounter{rowcount}{0}
 \begin{theorem}
-    \emph{A3} entails \emph{DNE}.
+    A3 entails DNE.
 \end{theorem}
 \begin{proof}
     Let $\Gamma' = \Gamma \cup \{\neg\neg P\}$.
@@ -356,10 +361,6 @@ Let's prove the following conclusion: DNE $\Rightarrow$ LEM $\Rightarrow$ A3 $\R
 \end{proof}
 
 Hence, we could say the DNE, LEM and A3 are equivalent extension to IPL.
-
-\begin{remark}
-    LEM, DNE and A3 are not judgements or propositions. They are called \emph{rules}.
-\end{remark}
 
 \subsection{The Main Theorem}
 
