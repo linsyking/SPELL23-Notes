@@ -28,4 +28,4 @@ jobs:
         with:
           name: h1
           path: |
-            *.pdf
+            h1/*.pdf
