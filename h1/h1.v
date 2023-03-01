@@ -40,24 +40,7 @@ intro H4.
 apply H3.
 Qed.
 
-Theorem t_19: forall P Q: Prop, ((~P->~Q)->(~P->Q)->P)->~~P->P.
-Proof.
-unfold not.
-intros P Q H1 H2.
-apply H1.
-intros H3 H4.
-apply H3.
-elim H2.
-intro H5.
-apply H3.
-apply H5.
-intro H3.
-elim H2.
-apply H3.
-Qed.
-
-(* Alternative approach *)
-Theorem t_18_alt: forall P: Prop, ((~P->P)->P)->~~P->P.
+Theorem t_19_alt: forall P: Prop, ((~P->P)->P)->~ ~P->P.
 Proof.
 unfold not.
 intros P H1 H2.

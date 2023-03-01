@@ -3,6 +3,7 @@
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{setspace}
+\usepackage{amsthm}
 \usepackage{amssymb}
 \usepackage{enumerate}
 \usepackage{titlesec}
@@ -128,8 +129,9 @@
 \setcounter{rowcount}{0}
 
 \newtheorem{theorem}{Theorem}[section]
+\newtheorem*{remark}{Remark}
 \newtheorem{corollary}{Corollary}[theorem]
-\newenvironment{proof}{\emph{Proof}.}{\hfill$\square$}
+% \newenvironment{proof}{\emph{Proof}.}{\hfill$\square$}
 
 \SetWatermarkText{\mdfivesum file {\jobname}}
 \SetWatermarkFontSize{1cm}
@@ -156,7 +158,7 @@
 % \begin{spacing}{2}
 \subsection{Intuitionistic Proofs}
 
-I used some linear-style proofs to represent the proof tree which are much \emph{harder} to draw and read on an A-4 paper, except one proof. They can be converted to each other easily.
+I used some linear-style proofs for most theorems to represent the proof tree which are much \emph{harder} to draw and read on an A-4 paper. They can be converted to each other easily.
 
 \begin{theorem}
     $\vdash P\supset P\true$.
@@ -170,6 +172,7 @@ I used some linear-style proofs to represent the proof tree which are much \emph
     \end{tabular}
 \end{proof}
 
+\setcounter{rowcount}{0}
 \begin{theorem}
     $\vdash P \supset ((P\supset Q)\supset Q)$ \true.
 \end{theorem}
@@ -309,7 +312,7 @@ Let's prove the following conclusion: DNE $\Rightarrow$ LEM $\Rightarrow$ A3 $\R
     \emph{DNE} entails \emph{LEM}.
 \end{theorem}
 \begin{proof}
-    Theorem \ref{embedding-lem} with DNE reached LEM.
+    Theorem \ref{embedding-lem} with DNE imply LEM.
 \end{proof}
 
 \begin{theorem}
@@ -353,6 +356,10 @@ Let's prove the following conclusion: DNE $\Rightarrow$ LEM $\Rightarrow$ A3 $\R
 \end{proof}
 
 Hence, we could say the DNE, LEM and A3 are equivalent extension to IPL.
+
+\begin{remark}
+    LEM, DNE and A3 are not judgements or propositions. They are called \emph{rules}.
+\end{remark}
 
 \subsection{The Main Theorem}
 
