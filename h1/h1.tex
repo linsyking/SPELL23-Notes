@@ -391,54 +391,6 @@ For example,
 
 Proofs for other rules are quite tedious and trivial.
 
-% \begin{theorem}
-%     ($\top$-\textbf{I}) $\forall_\sigma, \brs{\Gamma} \leq \brs{\top}$.
-% \end{theorem}
-
-% \begin{proof}
-%     $\brs{\top} = 1$.
-% \end{proof}
-
-% \begin{theorem}
-%     ($\bot$-\textbf{E}) $\forall_\sigma, \brs{\Gamma} \leq \brs{\bot}\Rightarrow \brs{\Gamma} \leq \brs{A}$.
-% \end{theorem}
-
-% \begin{proof}
-%     $\brs{\bot} = 0\leq \brs{A}$.
-% \end{proof}
-
-% \begin{theorem}
-%     ($\land$-\textbf{I}) $\forall_\sigma, \brs{\Gamma} \leq \brs{A} \land \brs{\Gamma} \leq \brs{B} \Rightarrow \brs{\Gamma}\leq \brs{A\land B}$.
-% \end{theorem}
-
-% \begin{proof}
-%     $\brs{A\land B} = \brs{A} \times \brs{B}\geq \brs{\Gamma}$.
-% \end{proof}
-
-% \begin{theorem}
-%     ($\land$-\textbf{E1}) $\forall_\sigma, \brs{\Gamma} \leq \brs{A\land B} \Rightarrow \brs{\Gamma}\leq \brs{A}$.
-% \end{theorem}
-
-% \begin{proof}
-%     $\brs{B}\leq 1\Rightarrow \brs{\Gamma}\leq \brs{A}$.
-% \end{proof}
-
-% \begin{theorem}
-%     ($\land$-\textbf{E2}) $\forall_\sigma, \brs{\Gamma} \leq \brs{A\land B} \Rightarrow \brs{\Gamma}\leq \brs{B}$.
-% \end{theorem}
-
-% \begin{proof}
-%     $\brs{A}\leq 1\Rightarrow \brs{\Gamma}\leq \brs{B}$.
-% \end{proof}
-
-% \begin{theorem}
-%     ($\lor$-\textbf{I1}) $\forall_\sigma, \brs{\Gamma} \leq \brs{A} \Rightarrow \brs{\Gamma}\leq \brs{A\lor B}$.
-% \end{theorem}
-
-% \begin{proof}
-%     $\brs{A\lor B} = \brs{A} + \brs{B}$.
-% \end{proof}
-
 \subsection*{Appendix}
 The Coq code for some theorems, all verified.
 \lstinputlisting[language=Coq]{h1.v}
