@@ -133,9 +133,8 @@
 \newtheorem*{remark}{Remark}
 \newtheorem{corollary}{Corollary}[theorem]
 
-\SetWatermarkText{\mdfivesum file {\jobname}}
-\SetWatermarkFontSize{1cm}
-% \SetWatermarkAngle{30}
+% \SetWatermarkText{\mdfivesum file {\jobname}}
+% \SetWatermarkFontSize{1cm}
 \allowdisplaybreaks
 \graphicspath{ {./figures/} }
 
@@ -310,18 +309,18 @@ There are three ways to recover the classical logic from intuitionistic logic, b
     LEM, DNE and A3 are not judgements or propositions. They are called \emph{rules}.
 \end{remark}
 
-Let's prove their equivalency by using circular implication: DNE $\Rightarrow$ LEM $\Rightarrow$ A3 $\Rightarrow$ DNE.
-Here ``$A \Rightarrow B$'' means $\Gamma \vdash_{IPL\cup \{A\}} P\true$ iff $\Gamma \vdash_{IPL\cup \{B\}} P\true$. $\vdash_{IPL}$ means that the derivation is under IPL rules.
+Let's prove their equivalency by using circular ``implication'': DNE implies LEM implies A3 implies DNE.
+Here ``$A$ implies $B$'' means $\Gamma \vdash_{IPL\cup \{A\}} P\true$ iff $\Gamma \vdash_{IPL\cup \{B\}} P\true$. $\vdash_{IPL}$ means that the derivation is under IPL rules.
 
 \begin{theorem}
-    DNE entails LEM.
+    DNE implies rule LEM.
 \end{theorem}
 \begin{proof}
     Theorem \ref{embedding-lem} with DNE imply LEM.
 \end{proof}
 
 \begin{theorem}
-    LEM entails A3.
+    LEM implies rule A3.
 \end{theorem}
 \setcounter{rowcount}{0}
 \begin{proof}
@@ -345,7 +344,7 @@ Here ``$A \Rightarrow B$'' means $\Gamma \vdash_{IPL\cup \{A\}} P\true$ iff $\Ga
 
 \setcounter{rowcount}{0}
 \begin{theorem}
-    A3 entails DNE.
+    A3 implies rule DNE.
 \end{theorem}
 \begin{proof}
     Let $\Gamma' = \Gamma \cup \{\neg\neg P\}$.
