@@ -1,0 +1,130 @@
+\documentclass{article}
+\usepackage[a4paper,left=2.5cm,right=2.5cm,top=\dimexpr15mm+1.5\baselineskip,bottom=2cm]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{enumerate}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{exscale}
+\usepackage{pdfpages}
+\usepackage{mathpartir}
+\usepackage{relsize}
+\usepackage{cases}
+\usepackage{mathrsfs}
+\usepackage{dutchcal}
+\usepackage{float}
+\usepackage{tcolorbox}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{stmaryrd}
+
+\theoremstyle{definition}
+% \newtheorem{theorem}{Theorem}[section]
+\newtheorem*{remark}{Remark}
+% \newtheorem{corollary}{Corollary}[theorem]
+
+% \SetWatermarkText{\mdfivesum file {\jobname}}
+% \SetWatermarkFontSize{1cm}
+\allowdisplaybreaks
+\graphicspath{ {./figures/} }
+
+% Change here
+\newcommand{\course}{SPELL}
+\newcommand{\asnum}{2}
+\newcommand{\true}{\,\textsf{true}}
+\newcommand{\brs}[1]{\llbracket#1\rrbracket_\sigma}
+%
+
+\setcounter{section}{2}
+\hypersetup{
+    colorlinks, linkcolor=black, urlcolor=cyan
+}
+\title{\vspace{-3em}\course\, Lecture Notes \asnum\footnote{This note is licensed under a \href{https://creativecommons.org/licenses/by-nc-sa/2.0/}{CC BY-NC-SA 2.0} license.}}
+\author{Y. Xiang\vspace{1em}}
+\date{\today\vspace{-1em}}
+\begin{document}
+\maketitle
+% \begin{spacing}{2}
+\subsection{Lambda Calculus}
+
+\subsubsection*{Multiplication and Exponentiation}
+We first write down the definition of church numerals and addition.
+
+\begin{tcolorbox}
+    \textsf{define} zero = $\lambda$f.$\lambda$z.z
+
+    \textsf{define} one = $\lambda$f.$\lambda$z.f z
+
+    \textsf{define} add = $\lambda$x.$\lambda$y.$\lambda$f.$\lambda$z.y f (x f z)
+
+    \textsf{define} succ = $\lambda$x.add x one
+\end{tcolorbox}
+
+We interpret $x\times y$ by ``adding $x$ $y$ times''. So it is natural to write out:
+
+\begin{tcolorbox}
+    \textsf{define} mul = $\lambda$x.$\lambda$y.y (add x) zero
+\end{tcolorbox}
+
+Similarly,
+
+\begin{tcolorbox}
+    \textsf{define} exp = $\lambda$x.$\lambda$y.y (mul x) one
+\end{tcolorbox}
+
+If x = y, then mul = $\lambda$x.x (add x) zero, exp = $\lambda$x.x (mul x) one.
+
+\subsubsection*{Predecessor}
+
+We can use the \textsf{pair} encoding.
+
+If we want to get \textsf{pred}(x), then we can apply $(x, y) \rightarrow (y, y+1)$ to $(0, 0)$ x times, we get $(x-1,x)$.
+Finally, we extract the first element.
+
+Implementation:
+
+\begin{tcolorbox}
+    \textsf{define} TRUE = $\lambda$x.$\lambda$y.x
+
+    \textsf{define} FALSE = $\lambda$x.$\lambda$y.y
+
+    \textsf{define} pair = $\lambda$x.$\lambda$y.$\lambda$c.c x y
+
+    \textsf{define} first = $\lambda$p.p TRUE
+
+    \textsf{define} second = $\lambda$p.p FALSE
+
+    \textsf{define} pred = $\lambda$x.first (x ($\lambda$p.pair (second p) (succ (second p))) (pair zero zero))
+\end{tcolorbox}
+
+\subsubsection*{IFZ}
+
+\begin{tcolorbox}
+    \textsf{define} ifz = $\lambda$n.$\lambda$m0.$\lambda$m1.IF (isZero n) m0 (m1 (pred n))
+\end{tcolorbox}
+
+\subsubsection*{$\alpha$-equivalence}
+
+\begin{itemize}
+    \item u and u. They are the same variables.
+          Therefore by rule \textsc{refl} this is an $\alpha$-equivalence.
+    \item u and v. They are all free variables, thus cannot be renamed. This is not a $\alpha$-equivalence.
+    \item $\lambda$z.z and $\lambda$z.($\lambda$x.x) z. This is not a $\alpha$-equivalence, it requires $\beta$-reduction.
+    \item $\lambda$u.u x and $\lambda$v.v x. Here u and v are \emph{bound} variables while x is free. By applying $\alpha-\lambda$ rule we can deduce this $\alpha$-equivalence.
+\end{itemize}
+
+\begin{remark}
+    Two terms are alpha-equivalent iff one can be converted into the other purely by renaming \textbf{bound variables}.
+\end{remark}
+
+\subsection*{Appendix}
+See \href{https://linsyking.github.io/lambda-playground/lambda.html?source=gist:93613afa70a3065aa03a989e5e7b537d}{JS to Lambda}.
+
+\begin{thebibliography}{9}
+    \bibitem{int} Y. Yue and J. Yuchen, “The Lambda Calculus.” Mar. 05, 2023.
+\end{thebibliography}
+
+\end{document}
