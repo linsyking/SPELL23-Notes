@@ -55,9 +55,9 @@ common warnings
 
 library
     exposed-modules:
-        LNT
-        Normal
         Translate
+        Normal
+        LNT
     hs-source-dirs:
         src
     build-depends:

@@ -1,13 +1,12 @@
-module Normal (Term (..), VarName (..)) where
+module Normal (Term (..)) where
 
 data Term
-    = Var VarName
-    | Ab VarName Term -- Abstraction
+    = Var String
+    | Ab String Term -- Abstraction
     | Ap Term Term -- Apply
-    deriving (Show, Eq)
+    deriving (Eq)
 
-data VarName = VarName String Int
-    deriving (Eq, Ord)
-
-instance Show VarName where
-    show (VarName s i) = s ++ show i
+instance Show Term where
+    show (Var s) = s
+    show (Ab x t) = "λ" ++ x ++ show t
+    show (Ap x y) = "(" ++ show x ++ ") " ++ "(" ++ show y ++ ")"

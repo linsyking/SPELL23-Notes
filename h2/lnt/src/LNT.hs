@@ -1,16 +1,17 @@
-module LNT (Term (..), subst, beta) where
+module LNT (Term (..), subst, beta, varNames) where
 
 data Term
     = FreeVar String
     | BoundVar Int
     | Ab Term -- Abstraction
     | Ap Term Term -- Ap(M;N)
+    deriving (Eq)
 
 instance Show Term where
     show (FreeVar x) = x
     show (BoundVar x) = "[" ++ show x ++ "]"
     show (Ab x) = "λ" ++ show x
-    show (Ap x y) = show x ++ "(" ++ show y ++ ")"
+    show (Ap x y) = "(" ++ show x ++ ") " ++ "(" ++ show y ++ ")"
 
 -- Find all possible bound var given layer l
 substHelper :: Term -> Int -> Term -> Term
@@ -41,6 +42,12 @@ beta (Ap m n) =
         Ap _ _ -> Ap (beta m) n
         _ -> Ap m n
 beta m = m
+
+varNames :: Term -> [String]
+varNames (FreeVar x) = [x]
+varNames (BoundVar _) = []
+varNames (Ab x) = varNames x
+varNames (Ap x y) = varNames x ++ varNames y
 
 testM :: Term
 testM = Ab (Ap (FreeVar "z") (BoundVar 0))

@@ -54,6 +54,9 @@
 % \begin{spacing}{2}
 \subsection{Lambda Calculus}
 
+I recommend viewing the complete code at the \href{https://linsyking.github.io/lambda-playground/lambda.html?source=gist:93613afa70a3065aa03a989e5e7b537d}{playground}.
+It is a fork from \href{https://github.com/wintercn/playground}{wintercn/playground}, which implements a JS to Lambda compiler.
+
 \subsubsection*{Multiplication and Exponentiation}
 We first write down the definition of church numerals and addition.
 
@@ -154,45 +157,78 @@ See the appendix for the complete implementation.
 Some test results:
 
 \begin{tcolorbox}
-    \textsf{ghci>} testMN
+    \textsf{\textsf{ghci>}} testMN
 
     \lb z([0])(\lb \lb [1](y))
 
-    \textsf{ghci>} beta testMN
+    \textsf{\textsf{ghci>}} testNM
+
+    \lb \lb [1](y)(\lb z([0]))
+
+    \textsf{\textsf{ghci>}} beta testMN
 
     z(\lb \lb [1](y))
 
-    \textsf{ghci>} beta testNM
+    \textsf{\textsf{ghci>}} beta testNM
 
     \lb \lb z([0])(y)
 
-    \textsf{ghci>} testM
+    \textsf{\textsf{ghci>}} testM
 
     \lb z([0])
 
-    \textsf{ghci>} testN
+    \textsf{\textsf{ghci>}} testN
 
     \lb \lb [1](y)
+\end{tcolorbox}
 
-    \textsf{ghci>} beta testN
+\subsubsection*{Conversion between LNT and \lb-terms}
 
-    \lb \lb [1](y)
+See the code in the appendix.
+Here are some test results.
 
-    \textsf{ghci>} testNM
+\begin{tcolorbox}
+    \textsf{ghci>} testR
 
-    \lb \lb [1](y)(\lb z([0]))
+    \lb ([0]) (\lb [1])
+
+    \textsf{ghci>} nameless2normal testR
+
+    \lb x0(x0) (\lb x1x0)
+
+    \textsf{ghci>} normal2nameless \$ nameless2normal test
+
+    testR  testT
+
+    \textsf{ghci>} normal2nameless \$ nameless2normal testR
+
+    \lb ([0]) (\lb [1])
+
+    \textsf{ghci>} testT
+
+    \lb x\lb x(x) (y)
+
+    \textsf{ghci>} normal2nameless testT
+
+    \lb \lb ([0]) (y)
+
+    \textsf{ghci>} nameless2normal \$ normal2nameless testT
+
+    \lb x0\lb x1(x1) (y)
 \end{tcolorbox}
 
 \subsection*{Appendix}
 
-I forked one project from \href{https://github.com/wintercn/playground}{wintercn/playground}, which implements a JS to Lambda compiler.
-I use it to implement all the lambda terms.
+Haskell code (read code on \href{https://github.com/linsyking/SPELL23-Notes/tree/master/h2/lnt}{github repo}):
 
-See \href{https://linsyking.github.io/lambda-playground/lambda.html?source=gist:93613afa70a3065aa03a989e5e7b537d}{JS to Lambda} for my whole code.
+\paragraph*{LNT.hs}
+\inputminted{haskell}{lnt/src/LNT.hs}
 
-Haskell code of LNT substitution algorithm (see the attached \textsf{LNT.hs}):
+\paragraph*{Normal.hs}
+\inputminted{haskell}{lnt/src/Normal.hs}
 
-\inputminted{haskell}{LNT.hs}
+\paragraph*{Translate.hs}
+\inputminted{haskell}{lnt/src/Translate.hs}
 
 \begin{thebibliography}{9}
     \bibitem{int} Y. Yue and J. Yuchen, “The Lambda Calculus.” Mar. 05, 2023.
