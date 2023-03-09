@@ -151,14 +151,54 @@ To represent M and N in the \emph{locally nameless terms} (LNT),
     N(M) = \lb \lb \fbox{1} y (\lb z \fbox{0})
 \end{tcolorbox}
 
-I implement the function \textsf{subst} and \textsf{beta} in \textsf{LNT.hs}.
-The key idea is to use a \textsf{substHelper} function.
+Consider a function $\mathtt{substh}_n(\pazocal{M};\pazocal{N})$, it is recursively defined:
+\begin{align*}
+    \mathtt{substh}_n(x;\pazocal{N})                            & = x                                                                                            \\
+    \mathtt{substh}_n(\fbox{$x$};\pazocal{N})                   & = \begin{cases}
+                                                                        \pazocal{N},\quad x = n  \\
+                                                                        \fbox{$x-1$},\quad x > n \\
+                                                                        \fbox{$x$},\quad x < n
+                                                                    \end{cases}                                                                     \\
+    \mathtt{substh}_n(\lambda \pazocal{M};\pazocal{N})          & = \mathtt{substh}_{n+1}(\pazocal{M};\pazocal{N})                                               \\
+    \mathtt{substh}_n(\pazocal{M}_1(\pazocal{M}_2);\pazocal{N}) & = (\mathtt{substh}_n(\pazocal{M}_1;\pazocal{N}))(\mathtt{substh}_n(\pazocal{M}_2;\pazocal{N}))
+\end{align*}
 
-See the code in the appendix.
+Now, to substitute $\lambda \pazocal{M}$ with $\pazocal{N}$, we define \texttt{subst} function:
+\begin{align*}
+    \mathtt{subst}(\lambda\pazocal{M};\pazocal{N}) = \mathtt{substh}_0(\pazocal{M};\pazocal{N})
+\end{align*}
+
+I also implement the function \textsf{beta} in \textsf{LNT.hs}.
 
 \subsubsection*{Conversion between LNT and \lb-terms}
 
 See the code in the appendix.
+
+After we define $\mathtt{bind}_n$, we can define function \texttt{n2l} recursively:
+\begin{align*}
+    \mathtt{n2l}(x)           & = x                                            \\
+    \mathtt{n2l}(x\, y)       & = (\mathtt{n2l}(x))(\mathtt{n2l}(y))           \\
+    \mathtt{n2l}(\lambda x.y) & = \lambda (\mathtt{bind}_0(x;\mathtt{n2l}(y)))
+\end{align*}
+
+To convert LNT back to \lb-terms, we have to first carefully choose the variable name to avoid conflicting with existing free variables.
+
+Let $Var_\pazocal{M}$ be the set of the names of the free variables of $\pazocal{M}$.
+Let $FR_\pazocal{M}(n)$ be an injective mapping that maps from an integer to a variable name (String) and $FR_\pazocal{M}(n)\notin Var_\pazocal{M}$.
+
+Then we can implement a helper function $\mathtt{l2nh}$.
+It is defined as:
+\begin{align*}
+    \mathtt{l2nh}_n(\pazocal{M};x)                            & = x                                                                                        \\
+    \mathtt{l2nh}_n(\pazocal{M};\fbox{$x$})                   & = FR_\pazocal{M}(n - x -1)                                                                 \\
+    \mathtt{l2nh}_n(\pazocal{M};\pazocal{M}_1(\pazocal{M}_2)) & = (\mathtt{l2nh}_n(\pazocal{M};\pazocal{M}_1))(\mathtt{l2nh}_n(\pazocal{M};\pazocal{M}_2)) \\
+    \mathtt{l2nh}_n(\pazocal{M};\lambda \pazocal{N})          & = \lambda FR_\pazocal{M}(n).\mathtt{l2nh}_{n+1}(\pazocal{M};\pazocal{N})                   \\
+\end{align*}
+
+Now the $\mathtt{l2n}$ function can be defined:
+\begin{align*}
+    \mathtt{l2n}(\pazocal{M}) = \mathtt{l2nh}_0(\pazocal{M};\pazocal{M})
+\end{align*}
 
 \subsection*{Appendix}
 
