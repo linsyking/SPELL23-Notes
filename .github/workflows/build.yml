@@ -23,9 +23,21 @@ jobs:
           working_directory: "h1"
           root_file: "h1.tex"
           latexmk_use_xelatex: true
+      - name: Compile LaTeX document
+        uses: xu-cheng/latex-action@v2
+        with:
+          working_directory: "h2"
+          root_file: "h2.tex"
+          latexmk_use_xelatex: true
       - name: Upload PDF file
         uses: actions/upload-artifact@v3
         with:
           name: h1
           path: |
             h1/*.pdf
+      - name: Upload PDF file
+        uses: actions/upload-artifact@v3
+        with:
+          name: h2
+          path: |
+            h2/*.pdf
