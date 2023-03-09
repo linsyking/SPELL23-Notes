@@ -1,3 +1,5 @@
 *.pdf
 *PDF/
 *.vscode/
+*/*
+!*/*.tex

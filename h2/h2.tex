@@ -1,0 +1,201 @@
+\documentclass{article}
+%include polycode.fmt
+\usepackage[a4paper,left=2.5cm,right=2.5cm,top=\dimexpr15mm+1.5\baselineskip,bottom=2cm]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{enumerate}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{exscale}
+\usepackage{pdfpages}
+\usepackage{mathpartir}
+\usepackage{relsize}
+\usepackage{cases}
+\usepackage{mathrsfs}
+\usepackage{dutchcal}
+\usepackage{float}
+\usepackage{tcolorbox}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{stmaryrd}
+\usepackage{calrsfs}
+\usepackage{minted}
+\DeclareMathAlphabet{\pazocal}{OMS}{zplm}{m}{n}
+
+\theoremstyle{definition}
+% \newtheorem{theorem}{Theorem}[section]
+\newtheorem*{remark}{Remark}
+% \newtheorem{corollary}{Corollary}[theorem]
+
+% \SetWatermarkText{\mdfivesum file {\jobname}}
+% \SetWatermarkFontSize{1cm}
+\allowdisplaybreaks
+\graphicspath{ {./figures/} }
+
+% Change here
+\newcommand{\course}{SPELL}
+\newcommand{\asnum}{2}
+\newcommand{\true}{\,\textsf{true}}
+\newcommand{\brs}[1]{\llbracket#1\rrbracket_\sigma}
+\newcommand{\lb}{$\lambda$}
+
+\setcounter{section}{2}
+\hypersetup{
+    colorlinks, linkcolor=black, urlcolor=cyan
+}
+\title{\vspace{-3em}\course\, Lecture Notes \asnum\footnote{This note is licensed under a \href{https://creativecommons.org/licenses/by-nc-sa/2.0/}{CC BY-NC-SA 2.0} license.}}
+\author{Y. Xiang\vspace{1em}}
+\date{\today\vspace{-1em}}
+\begin{document}
+\maketitle
+% \begin{spacing}{2}
+\subsection{Lambda Calculus}
+
+\subsubsection*{Multiplication and Exponentiation}
+We first write down the definition of church numerals and addition.
+
+\begin{tcolorbox}
+    \textsf{define} zero = \lb f.\lb z.z
+
+    \textsf{define} one = \lb f.\lb z.f z
+
+    \textsf{define} add = \lb x.\lb y.\lb f.\lb z.y f (x f z)
+
+    \textsf{define} succ = \lb x.add x one
+\end{tcolorbox}
+
+We interpret $x\times y$ by ``adding $x$ $y$ times''. So it is natural to write out:
+
+\begin{tcolorbox}
+    \textsf{define} mul = \lb x.\lb y.y (add x) zero
+\end{tcolorbox}
+
+Similarly,
+
+\begin{tcolorbox}
+    \textsf{define} exp = \lb x.\lb y.y (mul x) one
+\end{tcolorbox}
+
+If x = y, then mul = \lb x.x (add x) zero, exp = \lb x.x (mul x) one.
+
+\subsubsection*{Predecessor}
+
+We can use the \textsf{pair} encoding.
+
+If we want to get \textsf{pred}(x), then we can apply $(x, y) \rightarrow (y, y+1)$ to $(0, 0)$ x times, we get $(x-1,x)$.
+Finally, we extract the first element.
+
+Implementation:
+
+\begin{tcolorbox}
+    \textsf{define} TRUE = \lb x.\lb y.x
+
+    \textsf{define} FALSE = \lb x.\lb y.y
+
+    \textsf{define} pair = \lb x.\lb y.\lb c.c x y
+
+    \textsf{define} first = \lb p.p TRUE
+
+    \textsf{define} second = \lb p.p FALSE
+
+    \textsf{define} pred = \lb x.first (x (\lb p.pair (second p) (succ (second p))) (pair zero zero))
+\end{tcolorbox}
+
+\subsubsection*{IFZ}
+
+\begin{tcolorbox}
+    \textsf{define} ifz = \lb n.\lb m0.\lb m1.IF (isZero n) m0 (m1 (pred n))
+\end{tcolorbox}
+
+\subsubsection*{$\alpha$-equivalence}
+
+\begin{itemize}
+    \item u and u. They are the same variables.
+          Therefore by rule \textsc{refl} this is an $\alpha$-equivalence.
+    \item u and v. They are all free variables, thus cannot be renamed. This is not a $\alpha$-equivalence.
+    \item \lb z.z and \lb z.(\lb x.x) z. This is not a $\alpha$-equivalence, it requires $\beta$-reduction.
+    \item \lb u.u x and \lb v.v x. Here u and v are \emph{bound} variables while x is free. By applying $\alpha-\lambda$ rule we can deduce this $\alpha$-equivalence.
+    \item \lb u.u x and \lb v.v v. The latter is equal to \lb u.u u.
+          The former term has a free variable x while the latter hasn't.
+          Hence this is not an $\alpha$-equivalence.
+\end{itemize}
+
+\begin{remark}
+    Two terms are alpha-equivalent iff one can be converted into the other purely by renaming \textbf{bound variables}.
+\end{remark}
+
+\subsubsection*{Locally Nameless Terms}
+
+Let M = \lb x.(\lb y.y x) z = \lb x.z x, N = \lb x.\lb z.x y.
+
+M(N) = z N = z (\lb x.\lb a.x y).
+
+N(M) = \lb a.M y = \lb a.z y.
+
+To represent M and N in the \emph{locally nameless terms} (LNT),
+\begin{tcolorbox}
+    M = \lb (\lb \fbox{0} \fbox{1}) z = \lb z \fbox{0}
+
+    N = \lb \lb \fbox{1} y
+
+    M(N) = z (\lb \lb \fbox{1} y)
+
+    N(M) = \lb \lb \fbox{1} y (\lb z \fbox{0})
+\end{tcolorbox}
+
+I implement the function \textsf{subst} and \textsf{beta} in the attached file \textsf{LNT.hs}.
+The key idea is to use a \textsf{substHelper} function.
+
+See the appendix for the complete implementation.
+
+Some test results:
+
+\begin{tcolorbox}
+    \textsf{ghci>} testMN
+
+    \lb z([0])(\lb \lb [1](y))
+
+    \textsf{ghci>} beta testMN
+
+    z(\lb \lb [1](y))
+
+    \textsf{ghci>} beta testNM
+
+    \lb \lb z([0])(y)
+
+    \textsf{ghci>} testM
+
+    \lb z([0])
+
+    \textsf{ghci>} testN
+
+    \lb \lb [1](y)
+
+    \textsf{ghci>} beta testN
+
+    \lb \lb [1](y)
+
+    \textsf{ghci>} testNM
+
+    \lb \lb [1](y)(\lb z([0]))
+\end{tcolorbox}
+
+\subsection*{Appendix}
+
+I forked one project from \href{https://github.com/wintercn/playground}{wintercn/playground}, which implements a JS to Lambda compiler.
+I use it to implement all the lambda terms.
+
+See \href{https://linsyking.github.io/lambda-playground/lambda.html?source=gist:93613afa70a3065aa03a989e5e7b537d}{JS to Lambda} for my whole code.
+
+Haskell code of LNT substitution algorithm (see the attached \textsf{LNT.hs}):
+
+\inputminted{haskell}{LNT.hs}
+
+\begin{thebibliography}{9}
+    \bibitem{int} Y. Yue and J. Yuchen, “The Lambda Calculus.” Mar. 05, 2023.
+\end{thebibliography}
+
+\end{document}
