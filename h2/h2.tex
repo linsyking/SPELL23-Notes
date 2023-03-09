@@ -110,7 +110,9 @@ Implementation:
 \subsubsection*{IFZ}
 
 \begin{tcolorbox}
-    \textsf{define} ifz = \lb n.\lb m0.\lb m1.IF (isZero n) m0 (m1 (pred n))
+    \textsf{define} isZero = \lb x.x (\lb y.FALSE) TRUE
+
+    \textsf{define} ifz = \lb n.\lb m0.\lb m1.(isZero n) m0 (m1 (pred n))
 \end{tcolorbox}
 
 \subsubsection*{$\alpha$-equivalence}
@@ -149,73 +151,14 @@ To represent M and N in the \emph{locally nameless terms} (LNT),
     N(M) = \lb \lb \fbox{1} y (\lb z \fbox{0})
 \end{tcolorbox}
 
-I implement the function \textsf{subst} and \textsf{beta} in the attached file \textsf{LNT.hs}.
+I implement the function \textsf{subst} and \textsf{beta} in \textsf{LNT.hs}.
 The key idea is to use a \textsf{substHelper} function.
 
-See the appendix for the complete implementation.
-
-Some test results:
-
-\begin{tcolorbox}
-    \textsf{\textsf{ghci>}} testMN
-
-    \lb z([0])(\lb \lb [1](y))
-
-    \textsf{\textsf{ghci>}} testNM
-
-    \lb \lb [1](y)(\lb z([0]))
-
-    \textsf{\textsf{ghci>}} beta testMN
-
-    z(\lb \lb [1](y))
-
-    \textsf{\textsf{ghci>}} beta testNM
-
-    \lb \lb z([0])(y)
-
-    \textsf{\textsf{ghci>}} testM
-
-    \lb z([0])
-
-    \textsf{\textsf{ghci>}} testN
-
-    \lb \lb [1](y)
-\end{tcolorbox}
+See the code in the appendix.
 
 \subsubsection*{Conversion between LNT and \lb-terms}
 
 See the code in the appendix.
-Here are some test results.
-
-\begin{tcolorbox}
-    \textsf{ghci>} testR
-
-    \lb ([0]) (\lb [1])
-
-    \textsf{ghci>} nameless2normal testR
-
-    \lb x0(x0) (\lb x1x0)
-
-    \textsf{ghci>} normal2nameless \$ nameless2normal test
-
-    testR  testT
-
-    \textsf{ghci>} normal2nameless \$ nameless2normal testR
-
-    \lb ([0]) (\lb [1])
-
-    \textsf{ghci>} testT
-
-    \lb x\lb x(x) (y)
-
-    \textsf{ghci>} normal2nameless testT
-
-    \lb \lb ([0]) (y)
-
-    \textsf{ghci>} nameless2normal \$ normal2nameless testT
-
-    \lb x0\lb x1(x1) (y)
-\end{tcolorbox}
 
 \subsection*{Appendix}
 

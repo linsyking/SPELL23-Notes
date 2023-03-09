@@ -8,5 +8,5 @@ data Term
 
 instance Show Term where
     show (Var s) = s
-    show (Ab x t) = "λ" ++ x ++ show t
+    show (Ab x t) = "λ" ++ x ++ "." ++ show t
     show (Ap x y) = "(" ++ show x ++ ") " ++ "(" ++ show y ++ ")"
