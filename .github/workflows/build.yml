@@ -28,6 +28,7 @@ jobs:
         with:
           working_directory: "h2"
           root_file: "h2.tex"
+          latexmk_shell_escape: true
           latexmk_use_xelatex: true
       - name: Upload PDF file
         uses: actions/upload-artifact@v3
