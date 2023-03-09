@@ -53,7 +53,18 @@ extra-doc-files:    CHANGELOG.md
 common warnings
     ghc-options: -Wall
 
-executable lnt
+library
+    exposed-modules:
+        LNT
+        Normal
+        Translate
+    hs-source-dirs:
+        src
+    build-depends:
+        base >=4.7
+    default-language: Haskell2010
+
+executable lnt-exe
     -- Import common warning flags.
     import:           warnings
 
@@ -67,7 +78,10 @@ executable lnt
     -- other-extensions:
 
     -- Other library packages from which modules are imported.
-    build-depends:    base ^>=4.16.4.0
+    build-depends:
+        base ^>=4.16.4.0,
+        lnt
+
 
     -- Directories containing source files.
     hs-source-dirs:   app
