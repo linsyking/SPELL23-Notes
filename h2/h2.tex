@@ -132,7 +132,7 @@ Implementation:
     Two terms are alpha-equivalent iff one can be converted into the other purely by renaming \textbf{bound variables}.
 \end{remark}
 
-\subsubsection*{Locally Nameless Terms}
+\subsection{Locally Nameless Terms}
 
 Let M = \lb x.(\lb y.y x) z = \lb x.z x, N = \lb x.\lb z.x y.
 
@@ -172,7 +172,7 @@ I also implement the function \textsf{beta} in \textsf{LNT.hs}.
 
 \subsubsection*{Conversion between LNT and \lb-terms}
 
-See the code in the appendix.
+See the code implementation in appendix.
 
 After we define $\mathtt{bind}_n$, we can define function \texttt{n2l} recursively:
 \begin{align*}
