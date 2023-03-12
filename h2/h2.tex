@@ -192,10 +192,10 @@ Let $FR_\pazocal{M}(n)$ be an injective mapping that maps from an integer to a v
 Then we can implement a helper function $\mathtt{l2nh}$.
 It is defined as:
 \begin{align*}
-    \mathtt{l2nh}_n(\pazocal{M};x)                            & = x                                                                                                \\
-    \mathtt{l2nh}_n(\pazocal{M};\fbox{$x$})                   & = \textsf{undefined}                                                                               \\
-    \mathtt{l2nh}_n(\pazocal{M};\pazocal{M}_1(\pazocal{M}_2)) & = (\mathtt{l2nh}_n(\pazocal{M};\pazocal{M}_1))(\mathtt{l2nh}_n(\pazocal{M};\pazocal{M}_2))         \\
-    \mathtt{l2nh}_n(\pazocal{M};\lambda \pazocal{N})          & = \lambda FR_\pazocal{M}(n).\mathtt{l2nh}_{n+1}(\pazocal{M};\mathtt{subst}(N; FR_\pazocal{M} (n))) \\
+    \mathtt{l2nh}_n(\pazocal{M};x)                            & = x                                                                                                          \\
+    \mathtt{l2nh}_n(\pazocal{M};\fbox{$x$})                   & = \textsf{undefined}                                                                                         \\
+    \mathtt{l2nh}_n(\pazocal{M};\pazocal{M}_1(\pazocal{M}_2)) & = (\mathtt{l2nh}_n(\pazocal{M};\pazocal{M}_1))(\mathtt{l2nh}_n(\pazocal{M};\pazocal{M}_2))                   \\
+    \mathtt{l2nh}_n(\pazocal{M};\lambda \pazocal{N})          & = \lambda FR_\pazocal{M}(n).\mathtt{l2nh}_{n+1}(\pazocal{M};\mathtt{subst}(\pazocal{N}; FR_\pazocal{M} (n))) \\
 \end{align*}
 
 Now the $\mathtt{l2n}$ function can be defined:
