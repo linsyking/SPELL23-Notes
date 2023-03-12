@@ -45,3 +45,14 @@ testT = N.Ab "x" (N.Ab "x" (N.Ap (N.Var "x") (N.Var "y")))
 
 testR :: L.Term
 testR = L.Ab (L.Ap (L.BoundVar 0) (L.Ab (L.BoundVar 1)))
+
+nameless2normalHelper2 :: L.Term -> String -> Int -> N.Term
+nameless2normalHelper2 l prefix n =
+    case l of
+        (L.FreeVar x) -> N.Var x
+        (L.BoundVar x) -> error $ "cannot find any bindings for " ++ show x
+        (L.Ap x y) -> N.Ap (nameless2normalHelper x prefix n) (nameless2normalHelper y prefix n)
+        (L.Ab x) -> N.Ab name (nameless2normalHelper (L.subst x (L.FreeVar name)) prefix (n + 1)) where name = varFromNum prefix n
+
+nameless2normal2 :: L.Term -> N.Term
+nameless2normal2 l = nameless2normalHelper2 l (uniqueNamePrefix l) 0

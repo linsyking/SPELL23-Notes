@@ -181,7 +181,10 @@ After we define $\mathtt{bind}_n$, we can define function \texttt{n2l} recursive
     \mathtt{n2l}(\lambda x.y) & = \lambda (\mathtt{bind}_0(x;\mathtt{n2l}(y)))
 \end{align*}
 
-To convert LNT back to \lb-terms, we have to first carefully choose the variable name to avoid conflicting with existing free variables.
+Now we investigate the \emph{inverse} of \texttt{bind} function.
+Given a fresh variable $x$ and an LNT $\lambda\pazocal{M}$, $\pazocal{M} = \mathtt{subst}(\lambda \pazocal{M};x)$.
+
+Then, to convert LNT back to \lb-terms, we have to first carefully choose the variable name to avoid conflicting with existing free variables.
 
 Let $Var_\pazocal{M}$ be the set of the names of the free variables of $\pazocal{M}$.
 Let $FR_\pazocal{M}(n)$ be an injective mapping that maps from an integer to a variable name (String) and $FR_\pazocal{M}(n)\notin Var_\pazocal{M}$.
@@ -189,10 +192,10 @@ Let $FR_\pazocal{M}(n)$ be an injective mapping that maps from an integer to a v
 Then we can implement a helper function $\mathtt{l2nh}$.
 It is defined as:
 \begin{align*}
-    \mathtt{l2nh}_n(\pazocal{M};x)                            & = x                                                                                        \\
-    \mathtt{l2nh}_n(\pazocal{M};\fbox{$x$})                   & = FR_\pazocal{M}(n - x -1)                                                                 \\
-    \mathtt{l2nh}_n(\pazocal{M};\pazocal{M}_1(\pazocal{M}_2)) & = (\mathtt{l2nh}_n(\pazocal{M};\pazocal{M}_1))(\mathtt{l2nh}_n(\pazocal{M};\pazocal{M}_2)) \\
-    \mathtt{l2nh}_n(\pazocal{M};\lambda \pazocal{N})          & = \lambda FR_\pazocal{M}(n).\mathtt{l2nh}_{n+1}(\pazocal{M};\pazocal{N})                   \\
+    \mathtt{l2nh}_n(\pazocal{M};x)                            & = x                                                                                                \\
+    \mathtt{l2nh}_n(\pazocal{M};\fbox{$x$})                   & = \textsf{undefined}                                                                               \\
+    \mathtt{l2nh}_n(\pazocal{M};\pazocal{M}_1(\pazocal{M}_2)) & = (\mathtt{l2nh}_n(\pazocal{M};\pazocal{M}_1))(\mathtt{l2nh}_n(\pazocal{M};\pazocal{M}_2))         \\
+    \mathtt{l2nh}_n(\pazocal{M};\lambda \pazocal{N})          & = \lambda FR_\pazocal{M}(n).\mathtt{l2nh}_{n+1}(\pazocal{M};\mathtt{subst}(N; FR_\pazocal{M} (n))) \\
 \end{align*}
 
 Now the $\mathtt{l2n}$ function can be defined:
