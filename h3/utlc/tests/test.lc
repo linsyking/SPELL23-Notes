@@ -1,0 +1,75 @@
+eval \x. x;
+
+def $I = \x.x;
+
+eval $I;
+
+test $I = \y.y;
+
+print $I $I;
+
+def $Cap = \y.((\x.\y. x y) y);
+
+eval $Cap;
+
+eval (\x.\y.x) y;
+
+test $Cap = (\x.\y.x y); 
+
+def $S = \N.\f.\x. f (N f x);
+
+def $z = \f.\x.x;
+
+eval $S $z;
+
+eval ($S $z);
+
+eval $S ($S $z);
+
+eval $S (\f.\x.f x);
+
+print (\x. x x) (\x. x x);
+
+test $S ($S $z) = \f. \x. f (f x);
+
+test $S ($S ($S $z)) = \f. \x. f (f (f x));
+
+def $Y = \f.(\x.x x)(\x.f (x x));
+
+def $TT = \x.\y.x;
+def $FF = \x.\y.y;
+
+def $Pair = \x.\y.\s.s x y;
+
+def $BZ = \x.x;
+def $BS = \n.$Pair $FF n;
+def $BCase = \n.\m0.\m1. (n $TT) m0 (m1 (n $FF));
+
+def $B1 = $BS $BZ;
+def $B2 = $BS ($BS $BZ);
+def $B3 = $BS ($BS ($BS $BZ));
+
+eval $B3;
+
+def $AddProto = \add.\m.\n.$BCase m n (\p. add p ($BS n));
+def $Add = $Y $AddProto;
+
+def $B6 = $Add $B3 $B3;
+
+eval $B6;
+
+def $MulProto = \mul.\m.\n.$BCase m $BZ (\p. $Add n (mul p n));
+def $Mul = $Y $MulProto;
+
+eval $Mul $B3 $B3;
+eval $Mul $B6 $B6;
+
+test $Add $B1 $B1 = $B2;
+test $Mul $B2 $B3 = $Add $B3 $B3;
+test $Add $B3 $B3 = $Mul $B2 $B3;
+
+def $B2Cproto = \b2c.\m.$BCase m $z (\p. $S (b2c p));
+def $B2C = $Y $B2Cproto;
+
+eval $B2C $B6;
+eval $B2C ($Mul $B3 $B3);
