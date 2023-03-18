@@ -43,13 +43,13 @@
 
 % Change here
 \newcommand{\course}{SPELL}
-\newcommand{\asnum}{2}
+\newcommand{\asnum}{3}
 \newcommand{\true}{\,\textsf{true}}
 \newcommand{\brs}[1]{\llbracket#1\rrbracket_\sigma}
 \newcommand{\lb}{$\lambda$}
 \newcommand{\case}[5]{\mathtt{case}\, #1\, \{\li #2\hookrightarrow #3\, |\, \ri #4\hookrightarrow #5\}}
 
-\setcounter{section}{3}
+\setcounter{section}{\asnum}
 \hypersetup{
     colorlinks, linkcolor=black, urlcolor=cyan
 }
@@ -110,7 +110,7 @@ then the factorial can be written down: (where $\mathtt{isZero},\mathtt{mul}, \m
 \end{enumerate}
 \subsubsection*{Refactoring}
 \begin{enumerate}
-    \item The following two codes are type-isomorphic:
+    \item The following two pieces of code are type-isomorphic:
           \begin{mdframed}[backgroundcolor=bg]
               \begin{minted}{elm}
 type T = L1 T1 T2
