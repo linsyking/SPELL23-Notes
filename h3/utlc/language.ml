@@ -10,8 +10,25 @@ module MakeDynamics (S : Syntax.SYNTAX) : DYNAMICS with type t = S.t = struct
 
   type t = S.t
 
-  let step : t -> t option = failwith "Unimplemented (optional)"
-  let norm : t -> t = failwith "Unimplemented"
+  let rec step : t -> t option =
+   fun e ->
+    match out e with
+    | Var _ -> None
+    | Lam (x, y) -> (
+        match step y with Some z -> Some (into (Lam (x, z))) | None -> None)
+    | App (x, y) -> (
+        match out x with
+        | Var _ -> (
+            match step y with
+            | Some z -> Some (into (App (x, z)))
+            | None -> None)
+        | App (w, k) -> (
+            match step w with
+            | Some z -> Some (into (App (into (App (z, k)), y)))
+            | None -> None)
+        | Lam (w, k) -> Some (subst (y, w) k))
+
+  let rec norm x = match step x with None -> x | Some y -> norm y
 end
 
 module Dynamics = struct
