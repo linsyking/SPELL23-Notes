@@ -22,6 +22,7 @@
 \usepackage{xcolor}
 \usepackage{stmaryrd}
 \usepackage{calrsfs}
+\usepackage{mdframed}
 \usepackage{minted}
 \DeclareMathAlphabet{\pazocal}{OMS}{zplm}{m}{n}
 
@@ -29,7 +30,12 @@
 % \newtheorem{theorem}{Theorem}[section]
 \newtheorem*{remark}{Remark}
 % \newtheorem{corollary}{Corollary}[theorem]
-
+\definecolor{bg}{rgb}{0.95,0.95,0.95}
+\newcommand{\ip}[1]{\langle #1 \rangle}
+\newcommand{\lp}{\cdot \mathtt{l}}
+\newcommand{\rp}{\cdot \mathtt{r}}
+\newcommand{\li}{\mathtt{l}\cdot}
+\newcommand{\ri}{\mathtt{r}\cdot}
 % \SetWatermarkText{\mdfivesum file {\jobname}}
 % \SetWatermarkFontSize{1cm}
 \allowdisplaybreaks
@@ -41,8 +47,9 @@
 \newcommand{\true}{\,\textsf{true}}
 \newcommand{\brs}[1]{\llbracket#1\rrbracket_\sigma}
 \newcommand{\lb}{$\lambda$}
+\newcommand{\case}[5]{\mathtt{case}\, #1\, \{\li #2\hookrightarrow #3\, |\, \ri #4\hookrightarrow #5\}}
 
-\setcounter{section}{2}
+\setcounter{section}{3}
 \hypersetup{
     colorlinks, linkcolor=black, urlcolor=cyan
 }
@@ -51,10 +58,112 @@
 \date{\today\vspace{-1em}}
 \begin{document}
 \maketitle
-\subsection{Lambda Calculus}
+
+\subsection{Y combinator}
+If we have defined the Y combinator:
+\begin{align}
+    \mathtt{Y} \triangleq \lambda f.(\lambda x.f (x x)) (\lambda x.f (x x))
+\end{align}
+then the factorial can be written down: (where $\mathtt{isZero},\mathtt{mul}, \mathtt{pred}$ are functions defined in the last section)
+\begin{align}
+    \mathtt{factProto} & \triangleq \lambda f.\lambda x.\mathtt{isZero}\, x\, 1\, (\mathtt{mul}\, x\, (f (\mathtt{pred}\, x))) \\
+    \mathtt{fact}      & \triangleq \mathtt{Y}\, \mathtt{factProto}
+\end{align}
+
+\subsection{Type isomorphism}
+\subsubsection*{Commutativity and associativity of sum and product type}
+\begin{enumerate}
+    \item Define functions:
+          \begin{align*}
+              f:A \mapsto B,\qquad f(e)\triangleq \ip{e\rp, e\lp} \\
+              g:B \mapsto A,\qquad g(e)\triangleq \ip{e\rp, e\lp}
+          \end{align*}
+
+          For every $e: B\times A$,
+          \begin{align*}
+              f(g(e)) & = f(\ip{e\rp,e\lp})                         \\
+                      & = \ip{\ip{e\rp,e\lp}\rp, \ip{e\rp,e\lp}\lp} \\
+                      & = \ip{e\lp, e\rp}                           \\
+                      & = e
+          \end{align*}
+          Similarly, for every $e: A\times B$, $g(f(e)) = e$.
+    \item Define functions:
+          \begin{align*}
+              f:(A\times B)\times C \mapsto A\times (B\times C),\qquad f(e)\triangleq \ip{e\lp\lp,\ip{e\lp\rp,e\rp}} \\
+              g:A\times (B\times C) \mapsto (A\times B)\times C,\qquad g(e)\triangleq \ip{\ip{e\lp, e\rp\lp},e\rp\rp}
+          \end{align*}
+          and easy to see that $f(g(e)) = e$ and $g(f(e)) = e$.
+    \item Define functions:
+          \begin{align*}
+              f:(A+B)\mapsto (B+A),\qquad f(e)\triangleq \case{e}{x_1}{\ri x_1}{x_2}{\li x_2} \\
+              g:(B+A)\mapsto (A+B),\qquad g(e)\triangleq \case{e}{x_1}{\ri x_1}{x_2}{\li x_2}
+          \end{align*}
+          and easy to see that $f(g(e)) = e$ and $g(f(e)) = e$.
+    \item Define functions:
+          \begin{align*}
+              f    & :(A+B)+ C \mapsto A+(B+C)                                                                 \\
+              f(e) & \triangleq \case{e}{x_1}{\case{x_1}{y_1}{\li y_1}{y_2}{\ri (\li y_2)}}{x_2}{\ri(\ri x_2)} \\
+              g    & :A+(B+C) \mapsto (A+B)+ C                                                                 \\
+              g(e) & \triangleq \case{e}{x_1}{\li(\li x_1)}{x_2}{\case{x_2}{y_1}{\li (\ri y_1)}{y_2}{\ri y_2}}
+          \end{align*}
+          and easy to see that $f(g(e)) = e$ and $g(f(e)) = e$.
+\end{enumerate}
+\subsubsection*{Refactoring}
+\begin{enumerate}
+    \item The following two codes are type-isomorphic:
+          \begin{mdframed}[backgroundcolor=bg]
+              \begin{minted}{elm}
+type T = L1 T1 T2
+       | L2 T1 T2
+        \end{minted}
+          \end{mdframed}
+          $A:(T1\times T2) +(T1\times T2)$.
+          \begin{mdframed}[backgroundcolor=bg]
+              \begin{minted}{elm}
+type T' = L1 T2
+        | L2 T2
+type alias T = (T1, T')
+            \end{minted}
+          \end{mdframed}
+          $T':T2 + T2, B: T1 \times T' = T1 \times (T2 + T2)$.
+          \begin{align*}
+              f & : A\mapsto B,\qquad f(e) = \case{e}{x_1}{\ip{x_1\lp, \li (x_1\rp)}}{x_2}{\ip{x_2\lp, \ri (x_2\rp)}} \\
+              g & : B\mapsto A,\qquad g(e) = \case{(e\rp)}{x_1}{\li \ip{e\lp, x_1}}{x_2}{\ri \ip{e\lp, x_2}}
+          \end{align*}
+    \item Functions can be curried or uncurried:
+          \begin{mdframed}[backgroundcolor=bg]
+              \begin{minted}{elm}
+f1 (x, y) = e
+f2 x y = e
+  \end{minted}
+          \end{mdframed}
+          $F_1:A\times B \rightarrow \tau, F_2: A \rightarrow B \rightarrow \tau$.
+          \begin{align*}
+              f & : F_1 \mapsto F_2,\qquad f(e) = \lambda (x:A).\lambda (y:B).e\, \ip{x, y}  \\
+              g & : F_2 \mapsto F_1,\qquad f(e) = \lambda (x: A\times B).e\, (x\lp)\, (x\rp)
+          \end{align*}
+    \item The following two ways of defining function are type-isomorphic:
+          \begin{mdframed}[backgroundcolor=bg]
+              \begin{minted}{elm}
+f1 : T1 -> T
+f2 : T2 -> T
+        \end{minted}
+          \end{mdframed}
+          $A: (T1 \rightarrow T) \times (T2 \rightarrow T)$.
+          \begin{mdframed}[backgroundcolor=bg]
+              \begin{minted}{elm}
+type T12 = L T1 | R T2
+f : T12 -> T
+        \end{minted}
+          \end{mdframed}
+          $B: (T1 + T2) \rightarrow T$.
+          \begin{align*}
+              f: A \mapsto B,\qquad f(e) = \lambda (x:(T1+T2)). \case{x}{x_1}{(e\lp)(x_1)}{x_2}{(e\rp)(x_2)}
+          \end{align*}
+\end{enumerate}
 
 \begin{thebibliography}{9}
-    \bibitem{int} Y. Yue and J. Yuchen, “The Lambda Calculus.” Mar. 05, 2023.
+    \bibitem{int} Y. Yue, “The (Simply Typed) Lambda Calculus.” Mar. 12, 2023.
 \end{thebibliography}
 
 \end{document}
