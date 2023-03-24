@@ -60,7 +60,9 @@
 \begin{document}
 \maketitle
 
-\subsection{Substitution Lemma}
+\subsection{Properties}
+
+\subsubsection*{Substitution rule}
 
 The subsection lemma says:
 \begin{lemma}
@@ -74,6 +76,45 @@ We pattern match ``$\Gamma, x:\tau'\vdash e:\tau$'' to the \textsc{TPlus} rule:
 \begin{mathpar}
     \inferrule*{\Gamma, x:\tau'\vdash e_1:\mathtt{num}  \\  \Gamma, x:\tau'\vdash e_2:\mathtt{num} }{ \Gamma, x:\tau'\vdash \mathtt{plus}(e_1;e_2): \mathtt{num} }
 \end{mathpar}
+
+By definition, $[e'/x]\mathtt{plus}(e_1,e_2) = \mathtt{plus}([e'/x]e_1, [e'/x]e_2)$. Applying IH, we have $\Gamma \vdash [e'/x]e_1:\mathtt{num}$ and $\Gamma \vdash [e'/x]e_2:\mathtt{num}$. Then by the \textsc{TPlus} rule, we have $\Gamma \vdash \mathtt{plus}([e'/x]e_1, [e'/x]e_2):\mathtt{num}$, which is what we want.
+
+\subsubsection*{Unicity of typing}
+
+The unicity lemma says:
+\begin{lemma}
+    For all $\Gamma, e$, if $\Gamma \vdash e: \tau$ and $\Gamma \vdash e: \tau'$, then $\tau = \tau'$.
+\end{lemma}
+
+\begin{proof}
+    We do rule induction.
+    \begin{enumerate}[i)]
+        \item Case $\inferrule*[Right=TVar]{ }{\Gamma \vdash e : \tau}$
+
+              Here $e$ is a free variable, then we can read its type directly, which is the ``variable'' type.
+        \item Case $\inferrule*[Right=TNum]{ }{\Gamma \vdash \mathtt{num}\ip{n} : \mathtt{num}}$
+
+              Here $\mathtt{num}\ip{n}$ is a number, then we can read its type directly, which is the ``numbers'' type.
+        \item Case $\inferrule*[Right=TStr]{ }{\Gamma \vdash \mathtt{str}\ip{n} : \mathtt{str}}$
+
+              Here $\mathtt{str}\ip{n}$ is a number, then we can read its type directly, which is the ``strings'' type.
+        \item Case $\inferrule*[Right=TLen]{\Gamma \vdash e':\mathtt{str}}{\Gamma \vdash \mathtt{len}(e') : \mathtt{num}}$
+
+              We can also read the type directly from $\mathtt{len}(e')$, which is the ``numbers'' type.
+        \item Case $\inferrule*[Right=TPlus]{\Gamma \vdash e_1:\mathtt{num}\\ \Gamma \vdash e_2:\mathtt{num}}{\Gamma \vdash \mathtt{plus}(e_1;e_2) : \mathtt{num}}$
+
+              We can also read the type directly from $\mathtt{plus}(e_1;e_2)$, which is the ``numbers'' type.
+        \item Case $\inferrule*[Right=TCat]{\Gamma \vdash e_1:\mathtt{str}\\ \Gamma \vdash e_2:\mathtt{str}}{\Gamma \vdash \mathtt{cat}(e_1;e_2) : \mathtt{str}}$
+
+              We can also read the type directly from $\mathtt{cat}(e_1;e_2)$, which is the ``strings'' type.
+        \item Case $\inferrule*[Right=TLet]{\Gamma \vdash e_1:\tau_1 \\ \Gamma,x:\tau_1 \vdash e_2:\tau_2}{\Gamma \vdash \mathtt{let}(e_1;x.e_2) : \tau_2}$
+
+              Suppose we have $\inferrule*{\Gamma \vdash e_1:\tau_1' \\ \Gamma,x:\tau_1' \vdash e_2:\tau_2'}{\Gamma \vdash \mathtt{let}(e_1;x.e_2) : \tau_2'}$.
+
+              Applying IH on $\Gamma \vdash e_1:\tau_1$, we know that $e_1$ is uniquely typed, i.e. $\tau_1 = \tau_1'$.
+              Applying IH on $\Gamma,x:\tau_1 \vdash e_2:\tau_2$, we know that $e_2$ is also uniquely typed, i.e. $\tau_2 = \tau_2'$.
+    \end{enumerate}
+\end{proof}
 
 \begin{thebibliography}{9}
     \bibitem{int} Y. Yue. J. YuChen, “Proving Metatheorems and Type Safety.” Mar. 12, 2023.
