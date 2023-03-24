@@ -27,8 +27,8 @@
 \DeclareMathAlphabet{\pazocal}{OMS}{zplm}{m}{n}
 
 \theoremstyle{definition}
-% \newtheorem{theorem}{Theorem}[section]
-\newtheorem*{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
 \newtheorem*{remark}{Remark}
 % \newtheorem{corollary}{Corollary}[theorem]
 \definecolor{bg}{rgb}{0.95,0.95,0.95}
@@ -88,7 +88,7 @@ The unicity lemma says:
 
 \begin{proof}
     We do rule induction.
-    \begin{enumerate}[i)]
+    \begin{itemize}
         \item Case $\inferrule*[Right=TVar]{ }{\Gamma \vdash e : \tau}$
 
               Here $e$ is a free variable, then we can read its type directly, which is the ``variable'' type.
@@ -107,13 +107,133 @@ The unicity lemma says:
         \item Case $\inferrule*[Right=TCat]{\Gamma \vdash e_1:\mathtt{str}\\ \Gamma \vdash e_2:\mathtt{str}}{\Gamma \vdash \mathtt{cat}(e_1;e_2) : \mathtt{str}}$
 
               We can also read the type directly from $\mathtt{cat}(e_1;e_2)$, which is the ``strings'' type.
-        \item Case $\inferrule*[Right=TLet]{\Gamma \vdash e_1:\tau_1 \\ \Gamma,x:\tau_1 \vdash e_2:\tau_2}{\Gamma \vdash \mathtt{let}(e_1;x.e_2) : \tau_2}$
+        \item \textcolor{red}{Case} $\inferrule*[Right=TLet]{\Gamma \vdash e_1:\tau_1 \\ \Gamma,x:\tau_1 \vdash e_2:\tau_2}{\Gamma \vdash \mathtt{let}(e_1;x.e_2) : \tau_2}$
 
               Suppose we have $\inferrule*{\Gamma \vdash e_1:\tau_1' \\ \Gamma,x:\tau_1' \vdash e_2:\tau_2'}{\Gamma \vdash \mathtt{let}(e_1;x.e_2) : \tau_2'}$.
 
               Applying IH on $\Gamma \vdash e_1:\tau_1$, we know that $e_1$ is uniquely typed, i.e. $\tau_1 = \tau_1'$.
               Applying IH on $\Gamma,x:\tau_1 \vdash e_2:\tau_2$, we know that $e_2$ is also uniquely typed, i.e. $\tau_2 = \tau_2'$.
-    \end{enumerate}
+    \end{itemize}
+\end{proof}
+
+\begin{remark}
+    The simply typed lambda calculus also follows the unicity of typing. This is because there is no ambiguity in the typing rules and syntax.
+\end{remark}
+
+\subsubsection*{Uniquely deterministic}
+
+The uniquely deterministic lemma says:
+\begin{lemma}
+    If $e\longrightarrow e'$, then $e'$ is unique.
+\end{lemma}
+
+TODO
+
+\subsection{Type safety}
+
+Type safety theorem includes two parts: progress and preservation.
+
+\subsubsection*{Progress}
+
+\begin{theorem}
+    If $\vdash e:\tau$, then either $e$ \textsf{val} or there exists $e'$ such that $e\longrightarrow e'$.
+\end{theorem}
+
+\begin{proof}
+    Here we prove the cases for \texttt{let} and \texttt{len}. (Other cases are on the \cite{int})
+    \begin{itemize}
+        \item Case $\inferrule*[Right=TLen]{\Gamma \vdash e':\mathtt{str}}{\Gamma \vdash \mathtt{len}(e') : \mathtt{num}}$
+
+              WTS: Either $\mathtt{len}(e')\, \mathtt{val}$, or there exists $e''$ such that $\mathtt{len}(e') \longrightarrow \mathtt{len}(e'')$.
+
+              From syntax we know $\Gamma$ is empty; from premise we know that $\vdash e': \mathtt{str}$. Therefore, IH claims that:
+              \paragraph*{IH.} Either $e'$ \texttt{val} or there exists $e''$ such that $e' \longrightarrow e''$.
+
+              Case on \textbf{IH}:
+              \begin{itemize}
+                  \item Case: $e'\, \mathtt{val}$
+
+                        From \emph{Canonical Forms Lemma} (CFL) for type \texttt{str}, we know that $e' = \mathtt{str}\ip{s}$ for some $s$.
+                        Therefore $\mathtt{len}(e') = \mathtt{len}(\mathtt{str}\ip{s}) \longrightarrow \mathtt{num}\ip{ |s| }$ by \textsc{DLen}.
+                  \item Case: There exists $e''$ such that $e' \longrightarrow e''$
+
+                        By \textsc{DLenL}, we have $\mathtt{len}(e')\longrightarrow \mathtt{len}(e'')$.
+              \end{itemize}
+        \item Case $\inferrule*[Right=TLet]{\Gamma \vdash e_1:\tau_1 \\ \Gamma,x:\tau_1 \vdash e_2:\tau_2}{\Gamma \vdash \mathtt{let}(e_1;x.e_2) : \tau_2}$
+
+              WTS: Either $\mathtt{let}(e_1;x.e_2)\, \mathtt{val}$, or there exists $e''$ such that $\mathtt{let}(e_1;x.e_2) \longrightarrow e''$.
+
+              From syntax we know $\Gamma$ is empty; from premise we know that $\vdash e_1:\tau_1$ and $x:\tau_1 \vdash e_2:\tau_2$. Therefore,
+              \paragraph*{IH.} Either $e_1$\, \texttt{val} or there exists $e_1''$ such that $e_1 \longrightarrow e_1''$.
+
+              Case on \textbf{IH}:
+              \begin{itemize}
+                  \item Case: $e_1\, \mathtt{val}$
+
+                        By \textsc{DLet}, we have $\mathtt{let}(e_1;x.e_2) \longrightarrow [e_1/x]e_2$.
+
+                  \item Case: There exists $e_1''$ such that $e_1 \longrightarrow e_1''$
+
+                        By \textsc{DLetL}, we have $\mathtt{let}(e_1;x.e_2) \longrightarrow \mathtt{let}(e_1'';x.e_2)$.
+              \end{itemize}
+    \end{itemize}
+\end{proof}
+
+\subsubsection*{Preservation}
+
+\begin{theorem}
+    If $\vdash e:\tau$ and $e\longrightarrow e'$, then $\vdash e':\tau$.
+\end{theorem}
+
+\begin{proof}
+    It's possible to do induction on the derivation of $\vdash e:\tau$, but it's much harder (\cite{int}). Instead, we can do induction on the derivation of $e\longrightarrow e'$. Here we only show the case where $e$ is \texttt{let}.
+
+    \begin{itemize}
+        \item Case $\inferrule*[Right=DLet]{e_1\, \mathtt{val}}{\mathtt{let}(e_1;x.e_2) \longrightarrow [e_1/x]e_2}$.
+
+              By pattern match we know that $e = \mathtt{let}(e_1;x.e_2), e' = [e_1/x]e_2$
+
+              WTS: If $\vdash e:\tau$, then $\vdash [e_1/x]e_2: \tau$.
+
+              If $\vdash e:\tau$, by the inversion lemma for \texttt{cat}, we have $\vdash e_1:\tau_1$ and $x:\tau_1 \vdash e_2:\tau$. Then by the substitution lemma, we have $\vdash [e_1/x]e_2: \tau$.
+        \item \textcolor{red}{Case} $\inferrule*[Right=DLetL]{e_1\longrightarrow e_1'}{\mathtt{let}(e_1;x.e_2) \longrightarrow \mathtt{let}(e_1';x.e_2)}$
+
+              By pattern match we know that $e= \mathtt{let}(e_1;x.e_2), e' = \mathtt{let}(e_1';x.e_2)$.
+
+              WTS: If $\vdash e:\tau$, then $\mathtt{let}(e_1';x.e_2): \tau$.
+              We use IH on the premise:
+              \paragraph*{IH.} If $\vdash e_1:\tau_1$, then $\vdash e_1':\tau_1$.
+
+              If $\vdash e:\tau$, then by the inversion lemma, we have $\vdash e_1:\tau_1$ and $x:\tau_1 \vdash e_2:\tau$. Then by IH we have $\vdash e_1':\tau_1$.
+              Now by the substitution lemma, we have $\vdash [e_1'/e_1]e:\tau$. By the definition of substitution, we have $\vdash e': \tau$.
+    \end{itemize}
+\end{proof}
+
+\subsubsection*{Inversion lemma}
+\begin{lemma}
+    (\texttt{cat}) If $\Gamma\vdash \mathtt{cat}(e_1,e_2):\mathtt{str}$, then $\Gamma \vdash e_1:\mathtt{str}$ and $\Gamma\vdash e_2:\mathtt{str}$.
+\end{lemma}
+
+\begin{proof}
+    By induction on the derivation of $\Gamma\vdash \mathtt{cat}(e_1,e_2):\mathtt{str}$.
+    \begin{itemize}
+        \item Case $\inferrule*[Right=TCat]{\Gamma \vdash e_1:\mathtt{str} \\ \Gamma \vdash e_2:\mathtt{str}}{\Gamma \vdash \mathtt{cat}(e_1,e_2) : \mathtt{str}}$
+
+              By the definition of \textsc{DCat}, we have $\Gamma\vdash e_1:\mathtt{str}$ and $\Gamma\vdash e_2:\mathtt{str}$.
+    \end{itemize}
+\end{proof}
+
+\begin{lemma}
+    (\texttt{let}) If $\Gamma\vdash \mathtt{let}(e_1;x.e_2):\tau$, then $\Gamma\vdash e_1:\tau'$ and $\Gamma,x:\tau'\vdash e_2:\tau$ for some $\tau'$.
+\end{lemma}
+
+\begin{proof}
+    By induction on the derivation of $\Gamma\vdash \mathtt{let}(e_1;x.e_2):\tau$.
+    \begin{itemize}
+        \item Case $\inferrule*[Right=TLet]{\Gamma \vdash e_1:\tau_1 \\ \Gamma,x:\tau_1 \vdash e_2:\tau_2}{\Gamma \vdash \mathtt{let}(e_1;x.e_2) : \tau_2}$
+
+              By the definition of \textsc{TLet}, we have $\Gamma\vdash e_1:\tau_1$ and $\Gamma,x:\tau_1 \vdash e_2:\tau_2$.
+    \end{itemize}
 \end{proof}
 
 \begin{thebibliography}{9}
