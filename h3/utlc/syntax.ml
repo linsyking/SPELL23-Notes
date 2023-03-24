@@ -55,7 +55,9 @@ module Ast = struct
   let rec subst (e', x) e =
     match e with
     | Var var -> if Var.equal var x then e' else Var var
-    | Lam (var, t1) -> if Var.equal var x then e else Lam (var, subst (e', x) t1)
+    | Lam (var, t1) ->
+        if Var.equal var x then e
+        else Lam (var, subst (e', x) t1) (* Not correct !*)
     | App (p, q) -> App (subst (e', x) p, subst (e', x) q)
 
   (* Test for alpha equivalence between e1 and e2 *)

@@ -1,0 +1,82 @@
+\documentclass{article}
+%include polycode.fmt
+\usepackage[a4paper,left=2.5cm,right=2.5cm,top=\dimexpr15mm+1.5\baselineskip,bottom=2cm]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{enumerate}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{exscale}
+\usepackage{pdfpages}
+\usepackage{mathpartir}
+\usepackage{relsize}
+\usepackage{cases}
+\usepackage{mathrsfs}
+\usepackage{dutchcal}
+\usepackage{float}
+\usepackage{tcolorbox}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{stmaryrd}
+\usepackage{calrsfs}
+\usepackage{mdframed}
+\usepackage{minted}
+\DeclareMathAlphabet{\pazocal}{OMS}{zplm}{m}{n}
+
+\theoremstyle{definition}
+% \newtheorem{theorem}{Theorem}[section]
+\newtheorem*{lemma}{Lemma}
+\newtheorem*{remark}{Remark}
+% \newtheorem{corollary}{Corollary}[theorem]
+\definecolor{bg}{rgb}{0.95,0.95,0.95}
+\newcommand{\ip}[1]{\langle #1 \rangle}
+\newcommand{\lp}{\cdot \mathtt{l}}
+\newcommand{\rp}{\cdot \mathtt{r}}
+\newcommand{\li}{\mathtt{l}\cdot}
+\newcommand{\ri}{\mathtt{r}\cdot}
+% \SetWatermarkText{\mdfivesum file {\jobname}}
+% \SetWatermarkFontSize{1cm}
+\allowdisplaybreaks
+\graphicspath{ {./figures/} }
+
+% Change here
+\newcommand{\course}{SPELL}
+\newcommand{\asnum}{4}
+\newcommand{\true}{\,\textsf{true}}
+\newcommand{\brs}[1]{\llbracket#1\rrbracket_\sigma}
+\newcommand{\lb}{$\lambda$}
+\newcommand{\case}[5]{\mathtt{case}\, #1\, \{\li #2\hookrightarrow #3\, |\, \ri #4\hookrightarrow #5\}}
+
+\setcounter{section}{\asnum}
+\hypersetup{
+    colorlinks, linkcolor=black, urlcolor=cyan
+}
+\title{\vspace{-3em}\course\, Lecture Notes \asnum\footnote{This note is licensed under a \href{https://creativecommons.org/licenses/by-nc-sa/2.0/}{CC BY-NC-SA 2.0} license.}}
+\author{Y. Xiang\vspace{1em}}
+\date{\today\vspace{-1em}}
+\begin{document}
+\maketitle
+
+\subsection{Substitution Lemma}
+
+The subsection lemma says:
+\begin{lemma}
+    If $\Gamma \vdash e':\tau'$ and $\Gamma, x:\tau'\vdash e:\tau$, then $\Gamma \vdash [e'/x]e:\tau$.
+\end{lemma}
+
+We use the rule induction on ``$\Gamma, x:\tau'\vdash e:\tau$'' to prove the lemma.
+
+Here we only prove the lemma case for $\mathtt{plus}(e_1;e_2)$.
+We pattern match ``$\Gamma, x:\tau'\vdash e:\tau$'' to the \textsc{TPlus} rule:
+\begin{mathpar}
+    \inferrule*{\Gamma, x:\tau'\vdash e_1:\mathtt{num}  \\  \Gamma, x:\tau'\vdash e_2:\mathtt{num} }{ \Gamma, x:\tau'\vdash \mathtt{plus}(e_1;e_2): \mathtt{num} }
+\end{mathpar}
+
+\begin{thebibliography}{9}
+    \bibitem{int} Y. Yue. J. YuChen, “Proving Metatheorems and Type Safety.” Mar. 12, 2023.
+\end{thebibliography}
+
+\end{document}
