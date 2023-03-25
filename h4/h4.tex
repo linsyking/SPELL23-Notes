@@ -30,7 +30,7 @@
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}{Lemma}[section]
 \newtheorem*{remark}{Remark}
-% \newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{corollary}{Corollary}[section]
 \definecolor{bg}{rgb}{0.95,0.95,0.95}
 \newcommand{\ip}[1]{\langle #1 \rangle}
 \newcommand{\lp}{\cdot \mathtt{l}}
@@ -54,7 +54,7 @@
 \hypersetup{
     colorlinks, linkcolor=black, urlcolor=cyan
 }
-\title{\vspace{-3em}\course\, Lecture Notes \asnum\footnote{This note is licensed under a \href{https://creativecommons.org/licenses/by-nc-sa/2.0/}{CC BY-NC-SA 2.0} license.}}
+\title{\vspace{-3em}\course\, Lecture Notes \asnum\footnote{This note is licensed under a \href{https://creativecommons.org/licenses/by-nc-sa/2.0/}{CC BY-NC-SA 2.0} license.}\quad}
 \author{Y. Xiang\vspace{1em}}
 \date{\today\vspace{-1em}}
 \begin{document}
@@ -66,18 +66,21 @@
 
 The subsection lemma says:
 \begin{lemma}
+    \label{lem:substitution}
     If $\Gamma \vdash e':\tau'$ and $\Gamma, x:\tau'\vdash e:\tau$, then $\Gamma \vdash [e'/x]e:\tau$.
 \end{lemma}
 
-We use the rule induction on ``$\Gamma, x:\tau'\vdash e:\tau$'' to prove the lemma.
+\begin{proof}
+    We use the rule induction on ``$\Gamma, x:\tau'\vdash e:\tau$'' to prove the lemma.
 
-Here we only prove the lemma case for $\mathtt{plus}(e_1;e_2)$.
-We pattern match ``$\Gamma, x:\tau'\vdash e:\tau$'' to the \textsc{TPlus} rule:
-\begin{mathpar}
-    \inferrule*{\Gamma, x:\tau'\vdash e_1:\mathtt{num}  \\  \Gamma, x:\tau'\vdash e_2:\mathtt{num} }{ \Gamma, x:\tau'\vdash \mathtt{plus}(e_1;e_2): \mathtt{num} }
-\end{mathpar}
+    Here we only prove the lemma case for $\mathtt{plus}(e_1;e_2)$.
+    We pattern match ``$\Gamma, x:\tau'\vdash e:\tau$'' to the \textsc{TPlus} rule:
+    \begin{mathpar}
+        \inferrule*{\Gamma, x:\tau'\vdash e_1:\mathtt{num}  \\  \Gamma, x:\tau'\vdash e_2:\mathtt{num} }{ \Gamma, x:\tau'\vdash \mathtt{plus}(e_1;e_2): \mathtt{num} }
+    \end{mathpar}
 
-By definition, $[e'/x]\mathtt{plus}(e_1,e_2) = \mathtt{plus}([e'/x]e_1, [e'/x]e_2)$. Applying IH, we have $\Gamma \vdash [e'/x]e_1:\mathtt{num}$ and $\Gamma \vdash [e'/x]e_2:\mathtt{num}$. Then by the \textsc{TPlus} rule, we have $\Gamma \vdash \mathtt{plus}([e'/x]e_1, [e'/x]e_2):\mathtt{num}$, which is what we want.
+    By definition, $[e'/x]\mathtt{plus}(e_1,e_2) = \mathtt{plus}([e'/x]e_1, [e'/x]e_2)$. Applying IH, we have $\Gamma \vdash [e'/x]e_1:\mathtt{num}$ and $\Gamma \vdash [e'/x]e_2:\mathtt{num}$. Then by the \textsc{TPlus} rule, we have $\Gamma \vdash \mathtt{plus}([e'/x]e_1, [e'/x]e_2):\mathtt{num}$, which is what we want.
+\end{proof}
 
 \subsubsection*{Unicity of typing}
 
@@ -86,6 +89,7 @@ The unicity lemma says:
     For all $\Gamma, e$, if $\Gamma \vdash e: \tau$ and $\Gamma \vdash e: \tau'$, then $\tau = \tau'$.
 \end{lemma}
 
+\noindent\textcolor{red}{\texttt{[\#derive(Debug)]}}
 \begin{proof}
     We do rule induction.
     \begin{itemize}
@@ -107,12 +111,14 @@ The unicity lemma says:
         \item Case $\inferrule*[Right=TCat]{\Gamma \vdash e_1:\mathtt{str}\\ \Gamma \vdash e_2:\mathtt{str}}{\Gamma \vdash \mathtt{cat}(e_1;e_2) : \mathtt{str}}$
 
               We can also read the type directly from $\mathtt{cat}(e_1;e_2)$, which is the ``strings'' type.
-        \item \textcolor{red}{Case} $\inferrule*[Right=TLet]{\Gamma \vdash e_1:\tau_1 \\ \Gamma,x:\tau_1 \vdash e_2:\tau_2}{\Gamma \vdash \mathtt{let}(e_1;x.e_2) : \tau_2}$
+        \item \color{red}
+              Case $\inferrule*[Right=TLet]{\Gamma \vdash e_1:\tau_1 \\ \Gamma,x:\tau_1 \vdash e_2:\tau_2}{\Gamma \vdash \mathtt{let}(e_1;x.e_2) : \tau_2}$
 
               Suppose we have $\inferrule*{\Gamma \vdash e_1:\tau_1' \\ \Gamma,x:\tau_1' \vdash e_2:\tau_2'}{\Gamma \vdash \mathtt{let}(e_1;x.e_2) : \tau_2'}$.
 
               Applying IH on $\Gamma \vdash e_1:\tau_1$, we know that $e_1$ is uniquely typed, i.e. $\tau_1 = \tau_1'$.
               Applying IH on $\Gamma,x:\tau_1 \vdash e_2:\tau_2$, we know that $e_2$ is also uniquely typed, i.e. $\tau_2 = \tau_2'$.
+              \color{black}
     \end{itemize}
 \end{proof}
 
@@ -122,12 +128,86 @@ The unicity lemma says:
 
 \subsubsection*{Uniquely deterministic}
 
+Before we enter the topic, we first prove a lemma:
+
+\begin{lemma}
+    \label{lem:valorstep}
+    If $e$ \textsf{val}, then there doesn't exist $e'$ such that $e\longrightarrow e'$.
+\end{lemma}
+
+\begin{proof}
+    By syntax there are only two possibilities:
+    \begin{itemize}
+        \item Case $\inferrule*[Right=ValNum]{ }{\mathtt{num}\ip{n}\, \mathsf{val}}$
+
+              Cannot find rule implying $\inferrule*[Right=???]{\cdots}{\mathtt{num}\ip{n}\longrightarrow e'}$
+
+        \item Case $\inferrule*[Right=ValStr]{ }{\mathtt{str}\ip{s}\, \mathsf{val}}$
+
+              Cannot find rule implying $\inferrule*[Right=???]{\cdots}{\mathtt{num}\ip{n}\longrightarrow e'}$
+
+    \end{itemize}
+    In both cases, we cannot find a rule that can step $e$.
+    In other words, such $e'$ doesn't exist.
+\end{proof}
+
+\begin{corollary}
+    \label{cor:uniquedet}
+    If there exists $e'$ such that $e\longrightarrow e'$, then $e$ is not \textsf{val}.
+\end{corollary}
+
 The uniquely deterministic lemma says:
 \begin{lemma}
     If $e\longrightarrow e'$, then $e'$ is unique.
 \end{lemma}
 
-TODO
+\noindent\textcolor{red}{\texttt{[\#derive(Debug)]}}
+\begin{proof}
+    Here we only prove the cases where $e$ is a \texttt{let} or \texttt{cat}.
+    Use rule induction on ``$e\longrightarrow e'$''.
+
+    \color{red}
+    \begin{itemize}
+        \item Case \texttt{let}
+
+              In this case by syntax we have two possible derivations:
+              \begin{itemize}
+                  \item $\inferrule*[Right=DLet]{e_1 \, \mathsf{val}}{\mathtt{let}(e_1;x.e_2) \longrightarrow [e_1/x]e_2}$
+                  \item $\inferrule*[Right=DLetL]{e_1\longrightarrow e_1'}{\mathtt{let}(e_1;x.e_2) \longrightarrow \mathtt{let}(e_1';x.e_2)}$
+              \end{itemize}
+              By the progress theorem, we know that either $e_1$ \textsf{val}, or there exists $e_1'$ such that $e_1\longrightarrow e_1'$.
+              If $e_1$ \textsf{val}, then the premise of \textsc{DLetL} cannot be satisfied, and we can only apply \textsc{DLet} rule.
+
+              Hence the result $[e_1/x]e_2$ is uniquely determined.
+        \item Case \texttt{cat}
+
+              By syntax we have three possible derivations:
+              \begin{itemize}
+                  \item $\inferrule*[Right=DCat]{ }{\mathtt{cat}(\mathtt{str}\ip{s_1};\mathtt{str}\ip{s_1})\longrightarrow \mathtt{str}\ip{s_1s_2}}$
+
+                  \item $\inferrule*[Right=DCatL]{e_1\longrightarrow e_1'}{\mathtt{cat}(e_1;e_2)\longrightarrow \mathtt{cat}(e_1';e_2)}$
+                  \item $\inferrule*[Right=DCatR]{e_1\,\mathsf{val} \\ e_2\longrightarrow e_2'}{\mathtt{cat}(e_1;e_2)\longrightarrow \mathtt{cat}(e_1;e_2')}$
+              \end{itemize}
+              Hence we can assume that $e = \mathtt{cat}(e_1;e_2)$ (there are no other syntax possible).
+              By \textsc{ValStr}, the \textsc{DCat} case implies $e_1$ \textsf{val} and $e_2$ \textsf{val}.
+              Then we apply the progress theorem on $e_1$ and $e_2$, we have following possibilities:
+              \begin{itemize}
+                  \item $e_1$ \textsf{val} and $e_2$ \textsf{val}.
+
+                        By lemma \ref{lem:valorstep}, it contradicts \textsc{DCatL} and \textsc{DCatR}, hence only \textsc{DCat} rule is possible.
+                  \item $e_1$ \textsf{val} and there exists $e_2'$ such that $e_2\longrightarrow e_2'$.
+
+                        By lemma \ref{lem:valorstep}, it contradicts \textsc{DCatL} and \textsc{DCat}, hence only \textsc{DCatR} rule is possible.
+                  \item There exists $e_1'$ such that $e_1\longrightarrow e_1'$ and $e_2$ \textsf{val}.
+
+                        By lemma \ref{lem:valorstep}, it contradicts \textsc{DCatR} and \textsc{DCat}, hence only \textsc{DCatL} rule is possible.
+                  \item There exists $e_1',e_2'$ such that $e_1\longrightarrow e_1'$ and $e_2\longrightarrow e_2'$.
+
+                        By lemma \ref{lem:valorstep}, it contradicts \textsc{DCat} and \textsc{DCatR}, hence only \textsc{DCatL} rule are possible.
+              \end{itemize}
+    \end{itemize}
+    \color{black}
+\end{proof}
 
 \subsection{Type safety}
 
@@ -144,14 +224,14 @@ Type safety theorem includes two parts: progress and preservation.
     \begin{itemize}
         \item Case $\inferrule*[Right=TLen]{\Gamma \vdash e':\mathtt{str}}{\Gamma \vdash \mathtt{len}(e') : \mathtt{num}}$
 
-              WTS: Either $\mathtt{len}(e')\, \mathtt{val}$, or there exists $e''$ such that $\mathtt{len}(e') \longrightarrow \mathtt{len}(e'')$.
+              WTS: Either $\mathtt{len}(e')\, \mathsf{val}$, or there exists $e''$ such that $\mathtt{len}(e') \longrightarrow \mathtt{len}(e'')$.
 
               From syntax we know $\Gamma$ is empty; from premise we know that $\vdash e': \mathtt{str}$. Therefore, IH claims that:
-              \paragraph*{IH.} Either $e'$ \texttt{val} or there exists $e''$ such that $e' \longrightarrow e''$.
+              \paragraph*{IH.} Either $e'$ \textsf{val} or there exists $e''$ such that $e' \longrightarrow e''$.
 
               Case on \textbf{IH}:
               \begin{itemize}
-                  \item Case: $e'\, \mathtt{val}$
+                  \item Case: $e'\, \mathsf{val}$
 
                         From \emph{Canonical Forms Lemma} (CFL) for type \texttt{str}, we know that $e' = \mathtt{str}\ip{s}$ for some $s$.
                         Therefore $\mathtt{len}(e') = \mathtt{len}(\mathtt{str}\ip{s}) \longrightarrow \mathtt{num}\ip{ |s| }$ by \textsc{DLen}.
@@ -161,14 +241,14 @@ Type safety theorem includes two parts: progress and preservation.
               \end{itemize}
         \item Case $\inferrule*[Right=TLet]{\Gamma \vdash e_1:\tau_1 \\ \Gamma,x:\tau_1 \vdash e_2:\tau_2}{\Gamma \vdash \mathtt{let}(e_1;x.e_2) : \tau_2}$
 
-              WTS: Either $\mathtt{let}(e_1;x.e_2)\, \mathtt{val}$, or there exists $e''$ such that $\mathtt{let}(e_1;x.e_2) \longrightarrow e''$.
+              WTS: Either $\mathtt{let}(e_1;x.e_2)\, \mathsf{val}$, or there exists $e''$ such that $\mathtt{let}(e_1;x.e_2) \longrightarrow e''$.
 
               From syntax we know $\Gamma$ is empty; from premise we know that $\vdash e_1:\tau_1$ and $x:\tau_1 \vdash e_2:\tau_2$. Therefore,
-              \paragraph*{IH.} Either $e_1$\, \texttt{val} or there exists $e_1''$ such that $e_1 \longrightarrow e_1''$.
+              \paragraph*{IH.} Either $e_1$\, \textsf{val} or there exists $e_1''$ such that $e_1 \longrightarrow e_1''$.
 
               Case on \textbf{IH}:
               \begin{itemize}
-                  \item Case: $e_1\, \mathtt{val}$
+                  \item Case: $e_1\, \mathsf{val}$
 
                         By \textsc{DLet}, we have $\mathtt{let}(e_1;x.e_2) \longrightarrow [e_1/x]e_2$.
 
@@ -185,18 +265,20 @@ Type safety theorem includes two parts: progress and preservation.
     If $\vdash e:\tau$ and $e\longrightarrow e'$, then $\vdash e':\tau$.
 \end{theorem}
 
+\noindent\textcolor{red}{\texttt{[\#derive(Debug)]}}
 \begin{proof}
     It's possible to do induction on the derivation of $\vdash e:\tau$, but it's much harder (\cite{int}). Instead, we can do induction on the derivation of $e\longrightarrow e'$. Here we only show the case where $e$ is \texttt{let}.
 
     \begin{itemize}
-        \item Case $\inferrule*[Right=DLet]{e_1\, \mathtt{val}}{\mathtt{let}(e_1;x.e_2) \longrightarrow [e_1/x]e_2}$.
+        \item Case $\inferrule*[Right=DLet]{e_1\, \mathsf{val}}{\mathtt{let}(e_1;x.e_2) \longrightarrow [e_1/x]e_2}$.
 
               By pattern match we know that $e = \mathtt{let}(e_1;x.e_2), e' = [e_1/x]e_2$
 
               WTS: If $\vdash e:\tau$, then $\vdash [e_1/x]e_2: \tau$.
 
               If $\vdash e:\tau$, by the inversion lemma for \texttt{cat}, we have $\vdash e_1:\tau_1$ and $x:\tau_1 \vdash e_2:\tau$. Then by the substitution lemma, we have $\vdash [e_1/x]e_2: \tau$.
-        \item \textcolor{red}{Case} $\inferrule*[Right=DLetL]{e_1\longrightarrow e_1'}{\mathtt{let}(e_1;x.e_2) \longrightarrow \mathtt{let}(e_1';x.e_2)}$
+        \item \color{red}
+              Case $\inferrule*[Right=DLetL]{e_1\longrightarrow e_1'}{\mathtt{let}(e_1;x.e_2) \longrightarrow \mathtt{let}(e_1';x.e_2)}$
 
               By pattern match we know that $e= \mathtt{let}(e_1;x.e_2), e' = \mathtt{let}(e_1';x.e_2)$.
 
@@ -206,6 +288,8 @@ Type safety theorem includes two parts: progress and preservation.
 
               If $\vdash e:\tau$, then by the inversion lemma, we have $\vdash e_1:\tau_1$ and $x:\tau_1 \vdash e_2:\tau$. Then by IH we have $\vdash e_1':\tau_1$.
               Now by the substitution lemma, we have $\vdash [e_1'/e_1]e:\tau$. By the definition of substitution, we have $\vdash e': \tau$.
+
+              \color{black}
     \end{itemize}
 \end{proof}
 
@@ -214,6 +298,8 @@ Type safety theorem includes two parts: progress and preservation.
     (\texttt{cat}) If $\Gamma\vdash \mathtt{cat}(e_1,e_2):\mathtt{str}$, then $\Gamma \vdash e_1:\mathtt{str}$ and $\Gamma\vdash e_2:\mathtt{str}$.
 \end{lemma}
 
+\noindent\textcolor{red}{\texttt{[\#derive(Debug)]}}
+\color{red}
 \begin{proof}
     By induction on the derivation of $\Gamma\vdash \mathtt{cat}(e_1,e_2):\mathtt{str}$.
     \begin{itemize}
@@ -222,11 +308,14 @@ Type safety theorem includes two parts: progress and preservation.
               By the definition of \textsc{DCat}, we have $\Gamma\vdash e_1:\mathtt{str}$ and $\Gamma\vdash e_2:\mathtt{str}$.
     \end{itemize}
 \end{proof}
+\color{black}
 
 \begin{lemma}
     (\texttt{let}) If $\Gamma\vdash \mathtt{let}(e_1;x.e_2):\tau$, then $\Gamma\vdash e_1:\tau'$ and $\Gamma,x:\tau'\vdash e_2:\tau$ for some $\tau'$.
 \end{lemma}
 
+\noindent\textcolor{red}{\texttt{[\#derive(Debug)]}}
+\color{red}
 \begin{proof}
     By induction on the derivation of $\Gamma\vdash \mathtt{let}(e_1;x.e_2):\tau$.
     \begin{itemize}
@@ -235,6 +324,7 @@ Type safety theorem includes two parts: progress and preservation.
               By the definition of \textsc{TLet}, we have $\Gamma\vdash e_1:\tau_1$ and $\Gamma,x:\tau_1 \vdash e_2:\tau_2$.
     \end{itemize}
 \end{proof}
+\color{black}
 
 \begin{thebibliography}{9}
     \bibitem{int} Y. Yue. J. YuChen, “Proving Metatheorems and Type Safety.” Mar. 12, 2023.
