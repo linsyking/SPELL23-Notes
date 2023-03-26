@@ -89,7 +89,6 @@ The unicity lemma says:
     For all $\Gamma, e$, if $\Gamma \vdash e: \tau$ and $\Gamma \vdash e: \tau'$, then $\tau = \tau'$.
 \end{lemma}
 
-\noindent\textcolor{red}{\texttt{[\#derive(Debug)]}}
 \begin{proof}
     We do rule induction.
     \begin{itemize}
@@ -111,14 +110,12 @@ The unicity lemma says:
         \item Case $\inferrule*[Right=TCat]{\Gamma \vdash e_1:\mathtt{str}\\ \Gamma \vdash e_2:\mathtt{str}}{\Gamma \vdash \mathtt{cat}(e_1;e_2) : \mathtt{str}}$
 
               We can also read the type directly from $\mathtt{cat}(e_1;e_2)$, which is the ``strings'' type.
-        \item \color{red}
-              Case $\inferrule*[Right=TLet]{\Gamma \vdash e_1:\tau_1 \\ \Gamma,x:\tau_1 \vdash e_2:\tau_2}{\Gamma \vdash \mathtt{let}(e_1;x.e_2) : \tau_2}$
+        \item Case $\inferrule*[Right=TLet]{\Gamma \vdash e_1:\tau_1 \\ \Gamma,x:\tau_1 \vdash e_2:\tau_2}{\Gamma \vdash \mathtt{let}(e_1;x.e_2) : \tau_2}$
 
               Suppose we have $\inferrule*{\Gamma \vdash e_1:\tau_1' \\ \Gamma,x:\tau_1' \vdash e_2:\tau_2'}{\Gamma \vdash \mathtt{let}(e_1;x.e_2) : \tau_2'}$.
 
               Applying IH on $\Gamma \vdash e_1:\tau_1$, we know that $e_1$ is uniquely typed, i.e. $\tau_1 = \tau_1'$.
               Applying IH on $\Gamma,x:\tau_1 \vdash e_2:\tau_2$, we know that $e_2$ is also uniquely typed, i.e. $\tau_2 = \tau_2'$.
-              \color{black}
     \end{itemize}
 \end{proof}
 
@@ -144,7 +141,7 @@ Before we enter the topic, we first prove a lemma:
 
         \item Case $\inferrule*[Right=ValStr]{ }{\mathtt{str}\ip{s}\, \mathsf{val}}$
 
-              Cannot find rule implying $\inferrule*[Right=???]{\cdots}{\mathtt{num}\ip{n}\longrightarrow e'}$
+              Cannot find rule implying $\inferrule*[Right=???]{\cdots}{\mathtt{str}\ip{n}\longrightarrow e'}$
 
     \end{itemize}
     In both cases, we cannot find a rule that can step $e$.
@@ -161,12 +158,10 @@ The uniquely deterministic lemma says:
     If $e\longrightarrow e'$, then $e'$ is unique.
 \end{lemma}
 
-\noindent\textcolor{red}{\texttt{[\#derive(Debug)]}}
 \begin{proof}
     Here we only prove the cases where $e$ is a \texttt{let} or \texttt{cat}.
     Use rule induction on ``$e\longrightarrow e'$''.
 
-    \color{red}
     \begin{itemize}
         \item Case \texttt{let}
 
@@ -175,8 +170,7 @@ The uniquely deterministic lemma says:
                   \item $\inferrule*[Right=DLet]{e_1 \, \mathsf{val}}{\mathtt{let}(e_1;x.e_2) \longrightarrow [e_1/x]e_2}$
                   \item $\inferrule*[Right=DLetL]{e_1\longrightarrow e_1'}{\mathtt{let}(e_1;x.e_2) \longrightarrow \mathtt{let}(e_1';x.e_2)}$
               \end{itemize}
-              By the progress theorem, we know that either $e_1$ \textsf{val}, or there exists $e_1'$ such that $e_1\longrightarrow e_1'$.
-              If $e_1$ \textsf{val}, then the premise of \textsc{DLetL} cannot be satisfied, and we can only apply \textsc{DLet} rule.
+              By lemma \ref{lem:valorstep}, if $e_1$ \textsf{val}, then the premise of \textsc{DLetL} cannot be satisfied, and we can only apply \textsc{DLet} rule. Vice versa, if $e_1\longrightarrow e_1'$, for some $e_1'$ then the premise of \textsc{DLet} cannot be satisfied, and we can only apply \textsc{DLetL} rule.
 
               Hence the result $[e_1/x]e_2$ is uniquely determined.
         \item Case \texttt{cat}
@@ -206,7 +200,6 @@ The uniquely deterministic lemma says:
                         By lemma \ref{lem:valorstep}, it contradicts \textsc{DCat} and \textsc{DCatR}, hence only \textsc{DCatL} rule are possible.
               \end{itemize}
     \end{itemize}
-    \color{black}
 \end{proof}
 
 \subsection{Type safety}
@@ -265,7 +258,6 @@ Type safety theorem includes two parts: progress and preservation.
     If $\vdash e:\tau$ and $e\longrightarrow e'$, then $\vdash e':\tau$.
 \end{theorem}
 
-\noindent\textcolor{red}{\texttt{[\#derive(Debug)]}}
 \begin{proof}
     It's possible to do induction on the derivation of $\vdash e:\tau$, but it's much harder (\cite{int}). Instead, we can do induction on the derivation of $e\longrightarrow e'$. Here we only show the case where $e$ is \texttt{let}.
 
@@ -277,8 +269,7 @@ Type safety theorem includes two parts: progress and preservation.
               WTS: If $\vdash e:\tau$, then $\vdash [e_1/x]e_2: \tau$.
 
               If $\vdash e:\tau$, by the inversion lemma for \texttt{cat}, we have $\vdash e_1:\tau_1$ and $x:\tau_1 \vdash e_2:\tau$. Then by the substitution lemma, we have $\vdash [e_1/x]e_2: \tau$.
-        \item \color{red}
-              Case $\inferrule*[Right=DLetL]{e_1\longrightarrow e_1'}{\mathtt{let}(e_1;x.e_2) \longrightarrow \mathtt{let}(e_1';x.e_2)}$
+        \item Case $\inferrule*[Right=DLetL]{e_1\longrightarrow e_1'}{\mathtt{let}(e_1;x.e_2) \longrightarrow \mathtt{let}(e_1';x.e_2)}$
 
               By pattern match we know that $e= \mathtt{let}(e_1;x.e_2), e' = \mathtt{let}(e_1';x.e_2)$.
 
@@ -288,8 +279,6 @@ Type safety theorem includes two parts: progress and preservation.
 
               If $\vdash e:\tau$, then by the inversion lemma, we have $\vdash e_1:\tau_1$ and $x:\tau_1 \vdash e_2:\tau$. Then by IH we have $\vdash e_1':\tau_1$.
               Now by the substitution lemma, we have $\vdash [e_1'/e_1]e:\tau$. By the definition of substitution, we have $\vdash e': \tau$.
-
-              \color{black}
     \end{itemize}
 \end{proof}
 
@@ -298,8 +287,6 @@ Type safety theorem includes two parts: progress and preservation.
     (\texttt{cat}) If $\Gamma\vdash \mathtt{cat}(e_1,e_2):\mathtt{str}$, then $\Gamma \vdash e_1:\mathtt{str}$ and $\Gamma\vdash e_2:\mathtt{str}$.
 \end{lemma}
 
-\noindent\textcolor{red}{\texttt{[\#derive(Debug)]}}
-\color{red}
 \begin{proof}
     By induction on the derivation of $\Gamma\vdash \mathtt{cat}(e_1,e_2):\mathtt{str}$.
     \begin{itemize}
@@ -308,14 +295,11 @@ Type safety theorem includes two parts: progress and preservation.
               By the definition of \textsc{DCat}, we have $\Gamma\vdash e_1:\mathtt{str}$ and $\Gamma\vdash e_2:\mathtt{str}$.
     \end{itemize}
 \end{proof}
-\color{black}
 
 \begin{lemma}
     (\texttt{let}) If $\Gamma\vdash \mathtt{let}(e_1;x.e_2):\tau$, then $\Gamma\vdash e_1:\tau'$ and $\Gamma,x:\tau'\vdash e_2:\tau$ for some $\tau'$.
 \end{lemma}
 
-\noindent\textcolor{red}{\texttt{[\#derive(Debug)]}}
-\color{red}
 \begin{proof}
     By induction on the derivation of $\Gamma\vdash \mathtt{let}(e_1;x.e_2):\tau$.
     \begin{itemize}
@@ -324,7 +308,6 @@ Type safety theorem includes two parts: progress and preservation.
               By the definition of \textsc{TLet}, we have $\Gamma\vdash e_1:\tau_1$ and $\Gamma,x:\tau_1 \vdash e_2:\tau_2$.
     \end{itemize}
 \end{proof}
-\color{black}
 
 \begin{thebibliography}{9}
     \bibitem{int} Y. Yue. J. YuChen, “Proving Metatheorems and Type Safety.” Mar. 12, 2023.
