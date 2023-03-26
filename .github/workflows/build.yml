@@ -30,6 +30,20 @@ jobs:
           root_file: "h2.tex"
           latexmk_shell_escape: true
           latexmk_use_xelatex: true
+      - name: Compile LaTeX document
+        uses: xu-cheng/latex-action@v2
+        with:
+          working_directory: "h3"
+          root_file: "h3.tex"
+          latexmk_shell_escape: true
+          latexmk_use_xelatex: true
+      - name: Compile LaTeX document
+        uses: xu-cheng/latex-action@v2
+        with:
+          working_directory: "h4"
+          root_file: "h4.tex"
+          latexmk_shell_escape: true
+          latexmk_use_xelatex: true
       - name: Upload PDF file
         uses: actions/upload-artifact@v3
         with:
@@ -42,3 +56,15 @@ jobs:
           name: h2
           path: |
             h2/*.pdf
+      - name: Upload PDF file
+        uses: actions/upload-artifact@v3
+        with:
+          name: h3
+          path: |
+            h3/*.pdf
+      - name: Upload PDF file
+        uses: actions/upload-artifact@v3
+        with:
+          name: h3
+          path: |
+            h3/*.pdf
